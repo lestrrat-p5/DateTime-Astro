@@ -6,6 +6,51 @@
 #include "DT_Util_Astro.h"
 
 static int
+__binary_search(mpfr_t *result, mpfr_t *lo, mpfr_t *hi, 
+    int (*phi)(mpfr_t *),
+    int (*mu)(mpfr_t *, mpfr_t *)
+) {
+    int loop = 1;
+    while (loop) {
+        mpfr_t x;
+        mpfr_init_set(x, *lo, GMP_RNDN);
+        mpfr_add(x, x, *hi, GMP_RNDN);
+        mpfr_div_ui(x, x, 2, GMP_RNDN);
+
+        if (mu(lo, hi)) {
+            mpfr_set(*result, x, GMP_RNDN);
+            loop = 0;
+        } else if (phi(&x)) {
+            mpfr_set(*hi, x, GMP_RNDN);
+        } else {
+            mpfr_set(*lo, x, GMP_RNDN);
+        }
+        mpfr_clear(x);
+    }
+
+    return 1;
+}
+
+static int
+__search_next(mpfr_t *result, mpfr_t *base, 
+    int (*check)(mpfr_t *x),
+    int (*next_val)(mpfr_t *next, mpfr_t *x)
+) {
+    mpfr_t x;
+    mpfr_init_set(x, *base, GMP_RNDN);
+    while ( ! check(&x) ) {
+        mpfr_t next;
+        mpfr_init(next);
+        next_val(&next, &x);
+        mpfr_set(x, next, GMP_RNDN);
+        mpfr_clear(next);
+    }
+    mpfr_set( result, x, GMP_RNDN );
+    mpfr_clear(x);
+    return 1;
+}
+
+static int
 __mod( mpfr_t *result, mpfr_t *target, mpfr_t *base ) {
     mpfr_t p, r;
 
@@ -147,9 +192,6 @@ fixed_from_ymd(int y, int m, int d) {
         ) + d
     ;
 }
-
-#define _amod(x, y) \
-    ( y + x % ( -y ) )
 
 static int
 gregorian_components_from_rd(long rd, long *y, int *m, int *d) {
