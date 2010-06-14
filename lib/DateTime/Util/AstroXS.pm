@@ -3,12 +3,14 @@ use strict;
 
 sub dt_from_moment {
     my ($y, $m, $d, $seconds) = ymd_seconds_from_moment($_[0]);
-    DateTime->new(
+    my $dt = DateTime->new(
         time_zone => 'UTC',
         year => $y,
         month => $m,
         day => $d,
-    )->add(seconds => $seconds);
+    );
+    $dt->add(seconds => $seconds);
+    return $dt;
 }
 
 1;

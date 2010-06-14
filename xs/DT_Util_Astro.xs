@@ -45,7 +45,7 @@ __search_next(mpfr_t *result, mpfr_t *base,
         mpfr_set(x, next, GMP_RNDN);
         mpfr_clear(next);
     }
-    mpfr_set( result, x, GMP_RNDN );
+    mpfr_set( *result, x, GMP_RNDN );
     mpfr_clear(x);
     return 1;
 }
@@ -301,7 +301,13 @@ EC4(mpfr_t *correction, int year) {
     mpfr_init_set_d(d, -0.0000266484, GMP_RNDN);
 
     polynomial(correction, &y, 4, &a, &b, &c, &d);
-    return mpfr_div_ui(*correction, *correction, 86400, GMP_RNDN);
+    mpfr_div_ui(*correction, *correction, 86400, GMP_RNDN);
+    mpfr_clear(y);
+    mpfr_clear(a);
+    mpfr_clear(b);
+    mpfr_clear(c);
+    mpfr_clear(d);
+    return 1;
 }
 
 static int
@@ -313,8 +319,13 @@ EC5(mpfr_t *correction, int year) {
     mpfr_init_set_d(b, -4.0675, GMP_RNDN);
     mpfr_init_set_d(c, 0.0219167, GMP_RNDN);
     polynomial(correction, &y, 3, &a, &b, &c);
-    return mpfr_div_ui(*correction, *correction, 86400, GMP_RNDN);
+    mpfr_div_ui(*correction, *correction, 86400, GMP_RNDN);
 
+    mpfr_clear(y);
+    mpfr_clear(a);
+    mpfr_clear(b);
+    mpfr_clear(c);
+    return 1;
 }
 
 static int
@@ -344,7 +355,7 @@ EC6(mpfr_t *correction, int year) {
 
 static int
 ephemeris_correction(mpfr_t *correction, int y) {
-    if (1988 < y && y <= 2019) {
+    if (1988 <= y && y <= 2019) {
         mpfr_set_si( *correction, y - 1933, GMP_RNDN );
         mpfr_div_si( *correction, *correction, 86400, GMP_RNDN );
     } else if ( 1900 <= y && y <= 1987 ) {
@@ -741,7 +752,8 @@ mpfr_fprintf(stderr,
         mpfr_t a, b, c, d;
         mpfr_init(solar_anomaly);
         mpfr_init_set_d(a, 2.5534, GMP_RNDN);
-        mpfr_init_set_d(b, 1236.85 * 29.10535669, GMP_RNDN);
+        mpfr_init_set_d(b, 1236.85, GMP_RNDN);
+        mpfr_mul_d(b, b, 29.10535669, GMP_RNDN);
         mpfr_init_set_d(c, -0.0000218, GMP_RNDN );
         mpfr_init_set_d(d, -0.00000011, GMP_RNDN );
         polynomial( &solar_anomaly, &C, 4, &a, &b, &c, &d);
@@ -982,6 +994,40 @@ mpfr_fprintf(stderr, "%.10RNf\n", *result );
     return 1;
 }
 
+static int
+lunar_phase( mpfr_t *result, mpfr_t *moment ) {
+    mpfr_t sl, ll, fullangle;
+    mpfr_init(sl);
+    mpfr_init(ll);
+    mpfr_init_set_ui(fullangle, 360, GMP_RNDN);
+
+    solar_longitude( &sl, moment );
+    lunar_longitude( &ll, moment );
+    mpfr_sub(*result, ll, sl, GMP_RNDN );
+    __mod(result, result, &fullangle);
+
+    mpfr_clear(sl);
+    mpfr_clear(ll);
+    mpfr_clear(fullangle);
+    return 1;
+}
+
+#if (0)
+static int
+new_moon_after_from_moment(mpfr_t *moment) {
+    mpfr_t phi, n;
+    mpfr_init(phi);
+
+    lunar_phase( &phi, moment );
+    mpfr_init_set(n, *moment, GMP_RNDN );
+    mpfr_sub(n, n, ZEROTH_NEW_MOON, GMP_RNDN);
+
+    mpfr_clear(result);
+    return 1;
+}
+#endif
+
+
 MODULE = DateTime::Util::Astro  PACKAGE = DateTime::Util::Astro   PREFIX = DT_Util_Astro_
 
 PROTOTYPES: DISABLE
@@ -1114,21 +1160,9 @@ DT_Util_Astro_solar_longitude_from_moment(moment)
 mpfr_t
 DT_Util_Astro_lunar_phase_from_moment(moment)
         SV_TO_MPFR moment
-    PREINIT:
-        mpfr_t sl, ll, fullangle;
     CODE:
         mpfr_init(RETVAL);
-        mpfr_init(sl);
-        mpfr_init(ll);
-        mpfr_init_set_ui(fullangle, 360, GMP_RNDN);
-
-        solar_longitude( &sl, &moment );
-        lunar_longitude( &ll, &moment );
-        mpfr_sub(RETVAL, ll, sl, GMP_RNDN );
-        __mod(&RETVAL, &RETVAL, &fullangle);
-        mpfr_clear(sl);
-        mpfr_clear(ll);
-        mpfr_clear(fullangle);
+        lunar_phase( &RETVAL, &moment );
         mpfr_clear(moment);
     OUTPUT:
         RETVAL

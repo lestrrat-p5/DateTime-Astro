@@ -75,7 +75,7 @@ sub solar_longitude {
 sub lunar_longitude {
     return lunar_longitude_from_moment( moment($_[0]) );
 }
-    
+
 1;
 
 __END__
@@ -158,7 +158,11 @@ Returns the date $dt expressed in moment
 
 =head2 nth_new_moon($n)
 
-Returns the $n-th new moon, in $moment
+Returns the $n-th new moon, in $moment.
+
+Currently the new moons dates are accurate to about within +/- 60 seconds of the actual new moon for modern dates. 
+
+For older dates, the accuraccy degrades a bit to about +/- 5 minutes.
 
 =head2 solar_longitude($dt)
 
