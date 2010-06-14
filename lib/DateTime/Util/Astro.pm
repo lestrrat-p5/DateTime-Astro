@@ -11,7 +11,7 @@ BEGIN {
         gregorian_year_from_rd
         gregorian_components_from_rd
         julian_centuries
-        julian_centuries_from_dt
+        julian_centuries_from_moment
         lunar_longitude
         lunar_longitude_from_moment
         lunar_phase
@@ -52,7 +52,6 @@ BEGIN {
 
 sub moment {
     my $dt = shift;
-if (! $dt->isa("DateTime") ) { Carp::confess("moment called with $dt") }
     my ($rd, $seconds) = $dt->utc_rd_values;
     return $rd + ($seconds / 86400);
 }
@@ -61,8 +60,8 @@ sub dynamical_moment_from_dt {
     return dynamical_moment( moment( $_[0] ) );
 }
 
-sub julian_centuries_from_dt {
-    return julian_centuries( dynamical_moment_from_dt( $_[0] ) );
+sub julian_centuries {
+    return julian_centuries_from_moment( dynamical_moment_from_dt( $_[0] ) );
 }
 
 sub lunar_phase {
@@ -89,11 +88,61 @@ DateTime::Util::Astro - Functions For Astromical Calendars
 
 DateTime::Util::Astro implements functions used in astronomical calendars.
 
+This module is best used in environments where a C compiler and the MPFR arbitrary precision math library is installed. It can fallback to using Math::BigInt, but that would pretty much render it useless because of its speed.
+
 =head1 FUNCTIONS
 
 =head2 BACKEND()
 
 Returns 'XS' or 'PP', noting the current backend.
+
+=head2 dt_from_moment($moment)
+
+Given a moment (days since rd + fractional seconds), returns a DateTime object in UTC
+
+=head2 dynamica_moment($moment)
+
+Computes the moment value from given moemnt, taking into account the ephemeris correction.
+
+=head2 dynamical_moment_from_dt($dt)
+
+Computes the moment value from a DateTime object, taking into account the ephemeris correction.
+
+=head2 ephemeris_correction($moment)
+
+Computes the ephemeris correction on a given moment
+
+=head2 gregorian_components_from_rd($rd_days)
+
+Computes year, month, date from RD value
+
+=head2 gregorian_year_from_rd($rd_days)
+
+Computes year from RD value
+
+=head2 julian_centuries($dt)
+
+Computes the julian centuries for given DateTime object
+
+=head2 julian_centuries_from_moment($moment)
+
+Computes the julian centuries for given moment
+
+=head2 lunar_phase($dt)
+
+Computes the lunar phase for given DateTime object
+
+=head2 lunar_phase_from_moment($moment)
+
+Computes the lunar phase for given moment
+
+=head2 polynomial($x, ...)
+
+Computes the polynomical expression using $x as the variable. The left most argument is the constant, and each successive argument is the coefficient for the next power of $x
+
+=head2 ymd_seconds_from_moment($moment)
+
+Computes the gregorian components (year, month, day) from the RD date, and the number of seconds from the fractional part.
 
 =head2 lunar_longitude($dt)
 
