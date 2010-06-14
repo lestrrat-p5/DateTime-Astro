@@ -1030,7 +1030,7 @@ DT_Util_Astro_ymd_seconds_from_moment(moment)
 
 
 mpfr_t
-DT_Util_Astro_julian_centuries(moment)
+DT_Util_Astro_julian_centuries_from_moment(moment)
         SV_TO_MPFR moment;
     CODE:
         mpfr_init(RETVAL);
