@@ -4,6 +4,16 @@ use Test::Exception;
 use DateTime::Util::Astro qw(moment new_moon_after new_moon_before);
 
 # 19:00 nekokak: ちなみに１９９８年１月２８日１５時０分５０秒４は新月です！
+# lestrrat: これは日本時間だから、UTCだと9時間ほどずれる
+
+lives_ok {
+    my $dt = new_moon_after( DateTime->new( year => 1998, month => 1, day => 27 ) );
+    is $dt->year, 1998;
+    is $dt->month, 1;
+    is $dt->day, 28;
+    is $dt->hour, 6;
+    is $dt->minute, 1; # XXXX
+} "sanity";
 
 sub datetime {
     return unless $_[0];
