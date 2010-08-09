@@ -162,6 +162,10 @@ Currently the new moons dates are accurate to about within +/- 60 seconds of the
 
 For older dates, the accuraccy degrades a bit to about +/- 5 minutes.
 
+=head2 new_moon_after($dt)
+
+=head2 new_moon_before($dt)
+
 =head2 solar_longitude($dt)
 
 Returns the Sun's longitude on the given date $dt

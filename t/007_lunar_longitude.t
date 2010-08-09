@@ -36,19 +36,21 @@ lives_ok {
     my $dt = datetime(do { my $data = shift @data; push @prev, $data; $data });
 
     while (my $next = datetime(do { my $data = shift @data; push @prev, $data if $data; $data })) {
-        my $got = new_moon_after( $dt );
-
-        my $delta = abs(moment($got) - moment($next));
-        ok $delta < 60, "new moon after $dt -> $got (expected $next) delta = $delta";
+        if (moment($next) - moment($dt) < 29.5) {
+            my $got = new_moon_after( $dt );
+            my $delta = abs(moment($got) - moment($next));
+            ok $delta < 60, "new moon after $dt -> $got (expected $next) delta = $delta";
+        }
         $dt = $next;
     }
 
     $dt = datetime(pop @prev);
     while (my $prev = datetime(pop @prev)) {
-        my $got = new_moon_before( $dt );
-
-        my $delta = abs(moment($prev) - moment($got));
-        ok $delta < 60, "new moon before $dt -> $got (expected $prev) delta = $delta";
+        if (moment($dt) - moment($prev) < 29.5) {
+            my $got = new_moon_before( $dt );
+            my $delta = abs(moment($prev) - moment($got));
+            ok $delta < 60, "new moon before $dt -> $got (expected $prev) delta = $delta";
+        }
         $dt = $prev;
     }
 };
