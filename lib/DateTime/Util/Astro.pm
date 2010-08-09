@@ -15,7 +15,12 @@ BEGIN {
         lunar_longitude
         lunar_longitude_from_moment
         lunar_phase
+        lunar_phase_from_moment
         moment
+        new_moon_after
+        new_moon_after_from_moment
+        new_moon_before
+        new_moon_before_from_moment
         nth_new_moon
         polynomial
         solar_longitude
@@ -23,7 +28,15 @@ BEGIN {
     );
     our $VERSION = '0.19999';
 
-    my $backend = $ENV{PERL_DATETIME_UTIL_ASTRO_BACKEND} || 'XS';
+    my $backend = 'XS';
+    my $explicit_xs = 0;
+    if (exists $ENV{PERL_DATETIME_UTIL_ASTRO_BACKEND} && 
+        $ENV{PERL_DATETIME_UTIL_ASTRO_BACKEND} eq 'XS') {
+        $explicit_xs = 1;
+    } elsif ($ENV{PERL_DATETIME_UTIL_ASTRO_BACKEND}) {
+        $backend = $ENV{PERL_DATETIME_UTIL_ASTRO_BACKEND};
+    }
+        
     my $loaded;
     my @errors;
     if ($backend ne 'PP') {
@@ -37,43 +50,28 @@ BEGIN {
         }
     }
 
-    if (! $loaded) {
+    if (! $loaded && ! $explicit_xs) {
         eval {
             require DateTime::Util::AstroPP;
             $loaded = 'PP';
         };
         if (my $e = $@) {
             push @errors, "Failed to load PP backend: $e";
-            die("DateTime::Util::Astro: Failed to load both XS and PP implementations. Can't proceed\n" . join("\n", @errors));
         }
     }
+
+    if (! $loaded ) {
+        die("DateTime::Util::Astro: Failed to load backend implementations. Can't proceed\n" . join("\n", @errors));
+    }
+
     eval "sub BACKEND() { '$loaded' }";
 }
 
 sub moment {
     my $dt = shift;
+    Carp::croak("moment called with invalid value: " . (defined $dt ? $dt : "(undef)")) unless ref $dt eq 'DateTime';
     my ($rd, $seconds) = $dt->utc_rd_values;
     return $rd + ($seconds / 86400);
-}
-
-sub dynamical_moment_from_dt {
-    return dynamical_moment( moment( $_[0] ) );
-}
-
-sub julian_centuries {
-    return julian_centuries_from_moment( dynamical_moment_from_dt( $_[0] ) );
-}
-
-sub lunar_phase {
-    return lunar_phase_from_moment( moment($_[0]) );
-}
-
-sub solar_longitude {
-    return solar_longitude_from_moment( moment($_[0]) );
-}
-    
-sub lunar_longitude {
-    return lunar_longitude_from_moment( moment($_[0]) );
 }
 
 1;

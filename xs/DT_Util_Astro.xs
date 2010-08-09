@@ -5,6 +5,9 @@
 #include "ppport.h"
 #include "DT_Util_Astro.h"
 
+#define TRACE 0
+#define ZEROTH_NEW_MOON 11.426184900006
+
 static int
 __binary_search(mpfr_t *result, mpfr_t *lo, mpfr_t *hi, 
     int (*phi)(mpfr_t *),
@@ -33,17 +36,29 @@ __binary_search(mpfr_t *result, mpfr_t *lo, mpfr_t *hi,
 
 static int
 __search_next(mpfr_t *result, mpfr_t *base, 
-    int (*check)(mpfr_t *x),
-    int (*next_val)(mpfr_t *next, mpfr_t *x)
+    int (*check)(mpfr_t *x, void *args),
+    void *check_args,
+    int (*next_val)(mpfr_t *next, mpfr_t *x, void *args),
+    void *next_args
 ) {
     mpfr_t x;
+
+#if (0)
+mpfr_fprintf(stderr,
+    "__search_next for %.10RNf\n", *base);
+#endif
+
     mpfr_init_set(x, *base, GMP_RNDN);
-    while ( ! check(&x) ) {
+    while ( ! check(&x, check_args) ) {
         mpfr_t next;
         mpfr_init(next);
-        next_val(&next, &x);
+        next_val(&next, &x, next_args);
         mpfr_set(x, next, GMP_RNDN);
         mpfr_clear(next);
+#if (0)
+mpfr_fprintf(stderr,
+    "x = %.10RNf\n", x);
+#endif
     }
     mpfr_set( *result, x, GMP_RNDN );
     mpfr_clear(x);
@@ -701,6 +716,165 @@ mpfr_fprintf(stderr, "%.10RNf\n", *result );
 }
 
 static int
+solar_longitude( mpfr_t *result, mpfr_t *moment ) {
+    mpfr_t C, fugly, A, N, longitude, fullangle;
+
+    mpfr_init(C);
+    julian_centuries(&C, moment);
+
+#ifdef ANNOYING_DEBUG
+#if (ANNOYING_DEBUG)
+mpfr_fprintf(stderr,
+    "julian_centuries = %.10RNf\n", C);
+#endif
+#endif
+    {
+        int i;
+        mpfr_init_set_ui(fugly, 0, GMP_RNDN);
+        for( i = 0; i < SOLAR_LONGITUDE_ARGS_SIZE; i++ ) {
+            mpfr_t a, b, c;
+            mpfr_init_set_d( a, SOLAR_LONGITUDE_ARGS[i][0], GMP_RNDN );
+            mpfr_init_set_d( b, SOLAR_LONGITUDE_ARGS[i][1], GMP_RNDN );
+            mpfr_init_set_d( c, SOLAR_LONGITUDE_ARGS[i][2], GMP_RNDN );
+            mpfr_mul(c, c, C, GMP_RNDN);
+            mpfr_add(b, b, c, GMP_RNDN);
+            __sin(&b, &b);
+            mpfr_mul(a, a, b, GMP_RNDN);
+            mpfr_add(fugly, fugly, a, GMP_RNDN);
+            mpfr_clear(a);
+            mpfr_clear(b);
+            mpfr_clear(c);
+        }
+    }
+
+    {
+        mpfr_t b, c;
+        mpfr_init_set_d(longitude, 282.7771834, GMP_RNDN);
+        mpfr_init_set_d(b, 36000.76953744, GMP_RNDN);
+        mpfr_mul(b, b, C, GMP_RNDN);
+        mpfr_init_set_d(c, 0.000005729577951308232, GMP_RNDN);
+        mpfr_mul(c, c, fugly, GMP_RNDN);
+        mpfr_add(longitude, longitude, b, GMP_RNDN);
+        mpfr_add(longitude, longitude, c, GMP_RNDN);
+        mpfr_clear(b);
+        mpfr_clear(c);
+    }
+
+    mpfr_init(A);
+    aberration(&A, moment);
+
+    mpfr_init(N);
+    nutation(&N, moment);
+
+#ifdef ANNOYING_DEBUG
+#if (ANNOYING_DEBUG)
+mpfr_fprintf(stderr,
+    "longitude = %.10RNf\naberration = %.10RNf\nnutation = %.10RNf\n",
+    longitude,
+    A,
+    N);
+#endif
+#endif
+
+    mpfr_set( *result, longitude, GMP_RNDN);
+    mpfr_add( *result, *result, A, GMP_RNDN );
+    mpfr_add( *result, *result, N, GMP_RNDN );
+
+    mpfr_init_set_ui( fullangle, 360, GMP_RNDN );
+#ifdef ANNOYING_DEBUG
+#if (ANNOYING_DEBUG)
+mpfr_fprintf(stderr, "(solar) mod(%.10RNf) = ", *result );
+#endif
+#endif
+    __mod( result, result, &fullangle );
+#ifdef ANNOYING_DEBUG
+#if (ANNOYING_DEBUG)
+mpfr_fprintf(stderr, "%.10RNf\n", *result );
+#endif
+#endif
+
+    mpfr_clear(A);
+    mpfr_clear(N);
+    mpfr_clear(C);
+    mpfr_clear(longitude);
+    mpfr_clear(fullangle);
+    mpfr_clear(fugly);
+
+    return 1;
+}
+
+static int
+lunar_phase( mpfr_t *result, mpfr_t *moment ) {
+    mpfr_t sl, ll, fullangle;
+    mpfr_init(sl);
+    mpfr_init(ll);
+    mpfr_init_set_ui(fullangle, 360, GMP_RNDN);
+
+    solar_longitude( &sl, moment );
+    lunar_longitude( &ll, moment );
+    mpfr_sub(*result, ll, sl, GMP_RNDN );
+    __mod(result, result, &fullangle);
+
+    mpfr_clear(sl);
+    mpfr_clear(ll);
+    mpfr_clear(fullangle);
+    return 1;
+}
+
+static inline void
+__adjust_lunar_phase_to_zero(mpfr_t *result) {
+    mpfr_t ll, delta;
+    int mode = -1;
+    int loop = 1;
+    /* Adjust values so that it's as close as possible to 0 degrees */
+
+    mpfr_init(ll);
+    mpfr_init_set_d(delta, 0.0001, GMP_RNDN);
+        
+    while (loop) {
+        int flipped = mode;
+        mpfr_t new_moment;
+        mpfr_init(new_moment);
+        lunar_phase(&ll, result);
+#if (TRACE)
+mpfr_fprintf(stderr,
+    "Adjusting ll from (%.30RNf) moment is %.5RNf delta is %.30RNf\n", ll, *result, delta);
+#endif
+            if (mpfr_cmp_ui( ll, 180 ) > 0) {
+                mode = 1;
+                mpfr_add( new_moment, *result, delta, GMP_RNDN );
+#if (TRACE)
+mpfr_fprintf(stderr, "add %.30RNf -> %.30RNf\n", *result, new_moment);
+#endif
+                mpfr_set(*result, new_moment, GMP_RNDN);
+                if (mpfr_cmp(new_moment, *result) == 0) {
+                    loop = 0;
+                }
+            } else if (mpfr_cmp_ui( ll, 180 ) < 0 ) {
+                if ( mpfr_cmp_d( ll, 0.000000000000000000001 ) < 0) {
+                    loop = 0;
+                } else {
+                    mode = 0;
+                    mpfr_sub( new_moment, *result, delta, GMP_RNDN );
+#if (TRACE)
+mpfr_fprintf(stderr, "sub %.120RNf -> %.120RNf\n", *result, new_moment);
+#endif
+                    if (mpfr_cmp(new_moment, *result) == 0) {
+                        loop = 0;
+                    }
+                    mpfr_set(*result, new_moment, GMP_RNDN);
+                }
+            } else {
+                loop = 0;
+            }
+            if (flipped != -1 && flipped != mode) {
+                mpfr_div_d(delta, delta, 1.1, GMP_RNDN);
+            }
+        }
+        mpfr_clear(delta);
+        mpfr_clear(ll);
+    }
+static int
 nth_new_moon( mpfr_t *result, int n_int ) {
     mpfr_t n, k, C, approx, E, solar_anomaly, lunar_anomaly, moon_argument, omega, extra, correction, additional;
 
@@ -890,6 +1064,8 @@ mpfr_fprintf(stderr,
     mpfr_add(*result, *result, extra, GMP_RNDN);
     mpfr_add(*result, *result, additional, GMP_RNDN);
 
+    __adjust_lunar_phase_to_zero( result );
+
     mpfr_clear(n);
     mpfr_clear(k);
     mpfr_clear(C);
@@ -907,125 +1083,157 @@ mpfr_fprintf(stderr,
 }
 
 static int
-solar_longitude( mpfr_t *result, mpfr_t *moment ) {
-    mpfr_t C, fugly, A, N, longitude, fullangle;
+__check_new_moon_before(mpfr_t *x, void *args) {
+    mpfr_t result;
+    int ok;
 
-    mpfr_init(C);
-    julian_centuries(&C, moment);
-
-#ifdef ANNOYING_DEBUG
-#if (ANNOYING_DEBUG)
+    int n = mpfr_get_si(*x, GMP_RNDN);
+    mpfr_init(result);
+    nth_new_moon(&result, n),
+#if (0)
 mpfr_fprintf(stderr,
-    "julian_centuries = %.10RNf\n", C);
+    "%d-th moon comparing %.10RNf against %.10RNf\n",
+        n,
+        result, *((mpfr_t *) args));
 #endif
-#endif
-    {
-        int i;
-        mpfr_init_set_ui(fugly, 0, GMP_RNDN);
-        for( i = 0; i < SOLAR_LONGITUDE_ARGS_SIZE; i++ ) {
-            mpfr_t a, b, c;
-            mpfr_init_set_d( a, SOLAR_LONGITUDE_ARGS[i][0], GMP_RNDN );
-            mpfr_init_set_d( b, SOLAR_LONGITUDE_ARGS[i][1], GMP_RNDN );
-            mpfr_init_set_d( c, SOLAR_LONGITUDE_ARGS[i][2], GMP_RNDN );
-            mpfr_mul(c, c, C, GMP_RNDN);
-            mpfr_add(b, b, c, GMP_RNDN);
-            __sin(&b, &b);
-            mpfr_mul(a, a, b, GMP_RNDN);
-            mpfr_add(fugly, fugly, a, GMP_RNDN);
-            mpfr_clear(a);
-            mpfr_clear(b);
-            mpfr_clear(c);
-        }
-    }
+    ok = mpfr_cmp(result, *((mpfr_t *) args)) < 0;
+    mpfr_clear(result);
+    return ok;
+}
 
-    {
-        mpfr_t b, c;
-        mpfr_init_set_d(longitude, 282.7771834, GMP_RNDN);
-        mpfr_init_set_d(b, 36000.76953744, GMP_RNDN);
-        mpfr_mul(b, b, C, GMP_RNDN);
-        mpfr_init_set_d(c, 0.000005729577951308232, GMP_RNDN);
-        mpfr_mul(c, c, fugly, GMP_RNDN);
-        mpfr_add(longitude, longitude, b, GMP_RNDN);
-        mpfr_add(longitude, longitude, c, GMP_RNDN);
-        mpfr_clear(b);
-        mpfr_clear(c);
-    }
-
-    mpfr_init(A);
-    aberration(&A, moment);
-
-    mpfr_init(N);
-    nutation(&N, moment);
-
-#ifdef ANNOYING_DEBUG
-#if (ANNOYING_DEBUG)
-mpfr_fprintf(stderr,
-    "longitude = %.10RNf\naberration = %.10RNf\nnutation = %.10RNf\n",
-    longitude,
-    A,
-    N);
-#endif
-#endif
-
-    mpfr_set( *result, longitude, GMP_RNDN);
-    mpfr_add( *result, *result, A, GMP_RNDN );
-    mpfr_add( *result, *result, N, GMP_RNDN );
-
-    mpfr_init_set_ui( fullangle, 360, GMP_RNDN );
-#ifdef ANNOYING_DEBUG
-#if (ANNOYING_DEBUG)
-mpfr_fprintf(stderr, "(solar) mod(%.10RNf) = ", *result );
-#endif
-#endif
-    __mod( result, result, &fullangle );
-#ifdef ANNOYING_DEBUG
-#if (ANNOYING_DEBUG)
-mpfr_fprintf(stderr, "%.10RNf\n", *result );
-#endif
-#endif
-
-    mpfr_clear(A);
-    mpfr_clear(N);
-    mpfr_clear(C);
-    mpfr_clear(longitude);
-    mpfr_clear(fullangle);
-    mpfr_clear(fugly);
-
+static int
+__next_new_moon_before(mpfr_t *next, mpfr_t *x, void *args) {
+    ((void) args);
+    mpfr_set(*next, *x, GMP_RNDN);
+    mpfr_sub_ui(*next, *next, 1, GMP_RNDN);
     return 1;
 }
 
 static int
-lunar_phase( mpfr_t *result, mpfr_t *moment ) {
-    mpfr_t sl, ll, fullangle;
-    mpfr_init(sl);
-    mpfr_init(ll);
-    mpfr_init_set_ui(fullangle, 360, GMP_RNDN);
+__check_new_moon_after(mpfr_t *x, void *args) {
+    mpfr_t result;
+    int ok;
 
-    solar_longitude( &sl, moment );
-    lunar_longitude( &ll, moment );
-    mpfr_sub(*result, ll, sl, GMP_RNDN );
-    __mod(result, result, &fullangle);
+    int n = mpfr_get_si(*x, GMP_RNDN);
+    mpfr_init(result);
+    nth_new_moon(&result, n),
+#if (0)
+mpfr_fprintf(stderr,
+    "%d-th moon comparing %.10RNf against %.10RNf\n",
+        n,
+        result, *((mpfr_t *) args));
+#endif
+    ok = mpfr_cmp(result, *((mpfr_t *) args)) > 0;
+    mpfr_clear(result);
+    return ok;
+}
 
-    mpfr_clear(sl);
-    mpfr_clear(ll);
-    mpfr_clear(fullangle);
+static int
+__next_new_moon_after(mpfr_t *next, mpfr_t *x, void *args) {
+    ((void) args);
+    mpfr_set(*next, *x, GMP_RNDN);
+    mpfr_add_ui(*next, *next, 1, GMP_RNDN);
     return 1;
 }
+
+static int
+new_moon_before_from_moment(mpfr_t *result, mpfr_t *o_moment) {
+    mpfr_t phi, n;
+    mpfr_t moment;
+
+    mpfr_init(n);
+    mpfr_init(phi);
+    mpfr_init_set(moment, *o_moment, GMP_RNDN);
+
+    lunar_phase( &phi, &moment );
+
+    {
+        mpfr_t a;
+
+        mpfr_init_set(a, phi, GMP_RNDN);
+        mpfr_div_ui(a, a, 360, GMP_RNDN);
+
+        mpfr_init_set(n, moment, GMP_RNDN);
+        mpfr_sub_d(n, n, ZEROTH_NEW_MOON, GMP_RNDN);
+        mpfr_div_d(n, n, MEAN_SYNODIC_MONTH, GMP_RNDN);
+        mpfr_sub(n, n, a, GMP_RNDN);
+        mpfr_round(n, n);
+        mpfr_clear(a);
+    }
+
+    {
+        mpfr_t nm_index;
+        int nm;
+
+        mpfr_init(nm_index);
+        __search_next( &nm_index, &n,
+            __check_new_moon_before, (void *) &moment,
+            __next_new_moon_before, NULL );
+        nm = mpfr_get_ui(nm_index, GMP_RNDN);
+
+        nth_new_moon(result, nm);
+        mpfr_clear(nm_index);
+    }
+
+    mpfr_clear(phi);
+    mpfr_clear(n);
+    mpfr_clear(moment);
+    return 1;
+}
+
+static int
+new_moon_after_from_moment(mpfr_t *result, mpfr_t *o_moment) {
+    mpfr_t phi, n, moment;
+
+    mpfr_init(n);
+    mpfr_init(phi);
+    mpfr_init_set( moment, *o_moment, GMP_RNDN );
+
+    lunar_phase( &phi, &moment );
+
+    {
+        mpfr_t a;
+
+        mpfr_init_set(a, phi, GMP_RNDN);
+        mpfr_div_ui(a, a, 360, GMP_RNDN);
+
+        mpfr_init_set(n, moment, GMP_RNDN);
+        mpfr_sub_d(n, n, ZEROTH_NEW_MOON, GMP_RNDN);
+        mpfr_div_d(n, n, MEAN_SYNODIC_MONTH, GMP_RNDN);
+#if (0)
+mpfr_fprintf(stderr,
+    "moment = %.10RNf, a = %.10RNf, phi = %.10RNf\n",
+    moment,
+    a, phi);
+#endif
+        mpfr_sub(n, n, a, GMP_RNDN);
+        mpfr_round(n, n);
+        mpfr_clear(a);
+    }
+
+    {
+        mpfr_t nm_index;
+        int nm;
+
+        mpfr_init(nm_index);
+        __search_next( &nm_index, &n,
+            __check_new_moon_after, (void *) moment,
+            __next_new_moon_after, NULL );
+        nm = mpfr_get_ui(nm_index, GMP_RNDN);
+
+        nth_new_moon(result, nm);
+        mpfr_clear(nm_index);
+    }
 
 #if (0)
-static int
-new_moon_after_from_moment(mpfr_t *moment) {
-    mpfr_t phi, n;
-    mpfr_init(phi);
+mpfr_fprintf(stderr,
+    "result -> %.10RNf\n", *result );
+#endif
 
-    lunar_phase( &phi, moment );
-    mpfr_init_set(n, *moment, GMP_RNDN );
-    mpfr_sub(n, n, ZEROTH_NEW_MOON, GMP_RNDN);
-
-    mpfr_clear(result);
+    mpfr_clear(phi);
+    mpfr_clear(n);
     return 1;
 }
-#endif
 
 
 MODULE = DateTime::Util::Astro  PACKAGE = DateTime::Util::Astro   PREFIX = DT_Util_Astro_
@@ -1167,4 +1375,23 @@ DT_Util_Astro_lunar_phase_from_moment(moment)
     OUTPUT:
         RETVAL
 
+mpfr_t
+DT_Util_Astro_new_moon_after_from_moment(moment)
+        SV_TO_MPFR moment
+    CODE:
+        mpfr_init(RETVAL);
+        new_moon_after_from_moment( &RETVAL, &moment );
+        mpfr_clear(moment);
+    OUTPUT:
+        RETVAL
+
+mpfr_t
+DT_Util_Astro_new_moon_before_from_moment(moment)
+        SV_TO_MPFR moment
+    CODE:
+        mpfr_init(RETVAL);
+        new_moon_before_from_moment( &RETVAL, &moment );
+        mpfr_clear(moment);
+    OUTPUT:
+        RETVAL
 

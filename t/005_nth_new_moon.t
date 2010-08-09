@@ -44,7 +44,9 @@ foreach my $data (@data) {
 }
 done_testing;
 
+# NOTE changed 0th new moon values from hour = 13 -> 10, minute 44 -> 13
 __DATA__
+0        1  1 11 10 13
 21014 1700  1 20  4 20
 21015 1700  2 18 23 33
 21016 1700  3 20 16 46

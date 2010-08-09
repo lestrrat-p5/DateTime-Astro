@@ -1,6 +1,6 @@
 package DateTime::Util::Astro;
 use strict;
-use Math::BigFloat ('lib'     => 'GMP,Pari');
+use Math::BigFloat ('lib'     => 'GMP,Pari,FastCalc');
 use Math::BigInt   ('upgrade' => 'Math::BigFloat');
 use Math::Trig();
 use POSIX ();
