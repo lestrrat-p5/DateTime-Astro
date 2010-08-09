@@ -86,7 +86,7 @@ DateTime::Util::Astro - Functions For Astromical Calendars
 
 DateTime::Util::Astro implements functions used in astronomical calendars.
 
-This module is best used in environments where a C compiler and the MPFR arbitrary precision math library is installed. It can fallback to using Math::BigInt, but that would pretty much render it useless because of its speed.
+This module is best used in environments where a C compiler and the MPFR arbitrary precision math library is installed. It can fallback to using Math::BigInt, but that would pretty much render it useless because of its speed and loss of accuracy that may creep up while doing Perl to C struct conversions.
 
 =head1 FUNCTIONS
 
@@ -98,7 +98,7 @@ Returns 'XS' or 'PP', noting the current backend.
 
 Given a moment (days since rd + fractional seconds), returns a DateTime object in UTC
 
-=head2 dynamica_moment($moment)
+=head2 dynamical_moment($moment)
 
 Computes the moment value from given moemnt, taking into account the ephemeris correction.
 
