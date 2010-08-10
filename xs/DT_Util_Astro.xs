@@ -7,10 +7,14 @@
 
 #define TRACE 0
 #define ZEROTH_NEW_MOON 11.426184900006
+#define MEAN_TROPICAL_YEAR 365.242189
+#define SOLAR_YEAR_RATE (MEAN_TROPICAL_YEAR / 360)
 
 static int
 __binary_search(mpfr_t *result, mpfr_t *lo, mpfr_t *hi, 
-    int (*phi)(mpfr_t *),
+    int (*phi)(mpfr_t *, void *args, int n_args),
+    void *args,
+    int n_args,
     int (*mu)(mpfr_t *, mpfr_t *)
 ) {
     int loop = 1;
@@ -20,10 +24,10 @@ __binary_search(mpfr_t *result, mpfr_t *lo, mpfr_t *hi,
         mpfr_add(x, x, *hi, GMP_RNDN);
         mpfr_div_ui(x, x, 2, GMP_RNDN);
 
-        if (mu(lo, hi)) {
+        if (mu(lo, hi) || mpfr_cmp(*hi, x) == 0 || mpfr_cmp(*lo, x) == 0) {
             mpfr_set(*result, x, GMP_RNDN);
             loop = 0;
-        } else if (phi(&x)) {
+        } else if (phi(&x, args, n_args)) {
             mpfr_set(*hi, x, GMP_RNDN);
         } else {
             mpfr_set(*lo, x, GMP_RNDN);
@@ -1235,6 +1239,125 @@ mpfr_fprintf(stderr,
     return 1;
 }
 
+static int
+estimate_prior_solar_longitude(mpfr_t *result, mpfr_t *moment, mpfr_t *phi) {
+    mpfr_t tau, delta;
+
+    mpfr_init_set(tau, *moment, GMP_RNDN);
+    mpfr_init(delta);
+
+    {
+        mpfr_t tmp;
+        mpfr_t fullangle;
+        mpfr_init(tmp);
+        mpfr_init_set_ui(fullangle, 360, GMP_RNDN);
+
+        solar_longitude( &tmp, moment );
+        mpfr_sub( tmp, tmp, *phi, GMP_RNDN );
+        __mod( &tmp, &tmp, &fullangle );
+        mpfr_mul_d( tmp, tmp, SOLAR_YEAR_RATE, GMP_RNDN );
+
+        mpfr_sub( tau, tau, tmp, GMP_RNDN );
+
+        {
+            mpfr_t tau_lon;
+
+            mpfr_init(tau_lon);
+            /* tau_lon = solar_longitude(tau_lon_arg) */
+            solar_longitude( &tau_lon, &tau );
+
+            mpfr_sub( tau_lon, tau_lon, *phi, GMP_RNDN );
+            mpfr_add_ui( tau_lon, tau_lon, 180, GMP_RNDN );
+
+            __mod( &delta, &tau_lon, &fullangle );
+
+            mpfr_clear(tau_lon);
+        }
+
+        mpfr_sub_ui( delta, delta, 180, GMP_RNDN );
+
+        mpfr_clear(tmp);
+        mpfr_clear(fullangle);
+    }
+
+    mpfr_mul_d( delta, delta, SOLAR_YEAR_RATE, GMP_RNDN );
+    mpfr_sub( tau, tau, delta, GMP_RNDN );
+    if (mpfr_cmp( *moment, tau ) > 0) {
+        mpfr_set( *result, tau, GMP_RNDN );
+    } else {
+        mpfr_set( *result, *moment, GMP_RNDN);
+    }
+        
+    mpfr_clear(tau);
+    mpfr_clear(delta);
+
+    return 1;
+}
+
+#define SOLAR_LONGITUDE_ALLOWED_DELTA 0.0000000001
+
+static int
+__solar_longitude_mu(mpfr_t *lo, mpfr_t *hi) {
+    int result = 0;
+    mpfr_t delta;
+    mpfr_init_set(delta, *lo, GMP_RNDN);
+    mpfr_sub(delta, delta, *hi, GMP_RNDN);
+    mpfr_abs(delta, delta, GMP_RNDN);
+
+    if (mpfr_cmp_d(delta, SOLAR_LONGITUDE_ALLOWED_DELTA) < 0) {
+        result = 1;
+    }
+    mpfr_clear(delta);
+    return result;
+}
+
+static int
+__solar_longitude_phi(mpfr_t *x, void *args, int n_args) {
+    int result = 0;
+    mpfr_t phi, lon, fullangle;
+
+    PERL_UNUSED_VAR(n_args);
+    
+    mpfr_init_set_ui(fullangle, 360, GMP_RNDN);
+    
+    mpfr_init( lon );
+    mpfr_init_set( phi, ((mpfr_t *) args)[0], GMP_RNDN );
+    
+    solar_longitude( &lon, x );
+
+    mpfr_sub( lon, lon, phi, GMP_RNDN );
+    __mod( &lon, &lon, &fullangle );
+
+    if ( mpfr_cmp_ui( lon, 180 ) < 0 ) {
+        result = 1;
+    }
+
+    mpfr_clear(lon);
+    mpfr_clear(phi);
+    mpfr_clear(fullangle);
+    return result;
+}
+
+static int
+solar_longitude_before( mpfr_t *result, mpfr_t *moment, mpfr_t *phi ) {
+    mpfr_t tau, l, u;
+    mpfr_init(tau);
+
+    estimate_prior_solar_longitude( &tau, moment, phi );
+    mpfr_init_set(l, tau, GMP_RNDN);
+    mpfr_sub_ui(l, l, 5, GMP_RNDN);
+    mpfr_init_set(u, tau, GMP_RNDN);
+    mpfr_add_ui(u, u, 5, GMP_RNDN);
+    
+    if (mpfr_cmp( *moment, u ) < 0) {
+        mpfr_set( u, *moment, GMP_RNDN );
+    }
+
+    __binary_search( result, &l, &u, __solar_longitude_phi, (void *) phi, 1, __solar_longitude_mu );
+
+    return 1;
+}
+
 
 MODULE = DateTime::Util::Astro  PACKAGE = DateTime::Util::Astro   PREFIX = DT_Util_Astro_
 
@@ -1394,4 +1517,17 @@ DT_Util_Astro_new_moon_before_from_moment(moment)
         mpfr_clear(moment);
     OUTPUT:
         RETVAL
+
+mpfr_t
+DT_Util_Astro_solar_longitude_before_from_moment( moment, phi )
+        SV_TO_MPFR moment
+        SV_TO_MPFR phi
+    CODE:
+        mpfr_init(RETVAL);
+        solar_longitude_before(&RETVAL, &moment, &phi );
+        mpfr_clear(moment);
+        mpfr_clear(phi);
+    OUTPUT:
+        RETVAL
+
 
