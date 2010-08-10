@@ -77,7 +77,7 @@ foreach my $data (@data) {
         "[before = $before][expected = $dt][delta = $delta]";
 
     $x = $dt->clone;
-    $x->subtract( days => 10);
+    $x->subtract( days => 10 );
     my $after = solar_longitude_after( $x, $expected );
     $delta = abs ($after->epoch - $dt->epoch);
     ok $delta < 540,

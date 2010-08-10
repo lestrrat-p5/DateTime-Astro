@@ -1,5 +1,11 @@
-#ifndef __DATETIME_UTIL_ASTRO_H__
-#define __DATETIME_UTIL_ASTRO_H__
+#ifndef __DT_ASTRO_H__
+#define __DT_ASTRO_H__
+
+#include "EXTERN.h"
+#include "perl.h"
+#include "XSUB.h"
+#include "ppport.h"
+#include "mpfr.h"
 
 #define TRACE 0
 #define SV_TO_MPFR mpfr_t
@@ -14,66 +20,8 @@
 #define MEAN_TROPICAL_YEAR 365.242189
 #define SOLAR_YEAR_RATE (MEAN_TROPICAL_YEAR / 360)
 
-/* [1] Table 12.1 p.183 (zero-padded to align veritcally) */
-#define SOLAR_LONGITUDE_ARGS_SIZE 49
-const double SOLAR_LONGITUDE_ARGS[59][3] = {
-    /*      X          Y             Z        */
-    /* left side of table 12.1                */
-    { 403406, 270.54861,      0.9287892 },
-    { 119433,  63.91854,  35999.4089666 },
-    {   3891, 317.84300,  71998.2026100 },
-    {   1721, 240.05200,  36000.3572600 },
-    {    350, 247.23000,  32964.4678000 },
-    {    314, 297.82000, 445267.1117000 },
-    {    242, 166.79000,      3.1008000 },
-    {    158,   3.50000,    -19.9739000 },
-    {    129, 182.95000,   9038.0293000 },
-    {     99,  29.80000,  33718.1480000 },
-    {     86, 249.20000,  -2280.7730000 },
-    {     72, 257.80000,  31556.4930000 },
-    {     64,  69.90000,   9037.7500000 },
-    {     38, 197.10000,  -4444.1760000 },
-    {     32,  65.30000,  67555.3160000 },
-    {     28, 341.50000,  -4561.5400000 },
-    {     27,  98.50000,   1221.6550000 },
-    {     24, 110.00000,  31437.3690000 },
-    {     21, 342.60000, -31931.7570000 },
-    {     18, 256.10000,   1221.9990000 },
-    {     14, 242.90000,  -4442.0390000 },
-    {     13, 151.80000,    119.0660000 },
-    {     12,  53.30000,     -4.5780000 },
-    {     10, 205.70000,    -39.1270000 },
-    {     10, 146.10000,  90073.7780000 },
-    /* right side of table 12.1               */
-    { 195207, 340.19128,  35999.1376958 },
-    { 112392, 331.26220,  35998.7287385 },
-    {   2819,  86.63100,  71998.4403000 },
-    {    660, 310.26000,  71997.4812000 },
-    {    334, 260.87000,    -19.4410000 },
-    {    268, 343.14000,  45036.8840000 },
-    {    234,  81.53000,  22518.4434000 },
-    {    132, 132.75000,  65928.9345000 },
-    {    114, 162.03000,   3034.7684000 },
-    {     93, 266.40000,   3034.4480000 },
-    {     78, 157.60000,  29929.9920000 },
-    {     68, 185.10000,    149.5880000 },
-    {     46,   8.00000, 107997.4050000 },
-    {     37, 250.40000,    151.7710000 },
-    {     29, 162.70000,  31556.0800000 },
-    {     27, 291.60000, 107996.7060000 },
-    {     25, 146.70000,  62894.1670000 },
-    {     21,   5.20000,  14578.2980000 },
-    {     20, 230.90000,  34777.2430000 },
-    {     17,  45.30000,  62894.5110000 },
-    {     13, 115.20000, 107997.9090000 },
-    {     13, 285.30000,  16859.0710000 },
-    {     10, 126.60000,  26895.2920000 },
-    {     10,  85.90000,  12297.5360000 }
-};
-
-
 #define LUNAR_LONGITUDE_ARGS_SIZE 59
-const int LUNAR_LONGITUDE_ARGS[59][5] = {
+static const int LUNAR_LONGITUDE_ARGS[59][5] = {
     /* left side of table 12.5 , [1] p192 */
     /*      V  W   X   Y   Z              */
     { 6288774, 0,  0,  1,  0 },
@@ -140,7 +88,7 @@ const int LUNAR_LONGITUDE_ARGS[59][5] = {
 
 /* {1} p.189 */
 #define NTH_NEW_MOON_CORRECTION_ARGS_SIZE 24
-const double NTH_NEW_MOON_CORRECTION_ARGS[NTH_NEW_MOON_CORRECTION_ARGS_SIZE][5] = {
+static const double NTH_NEW_MOON_CORRECTION_ARGS[NTH_NEW_MOON_CORRECTION_ARGS_SIZE][5] = {
     /*       V  W   X  Y   Z */
     { -0.40720, 0,  0, 1,  0 },
     {  0.01608, 0,  0, 2,  0 },
@@ -171,7 +119,7 @@ const double NTH_NEW_MOON_CORRECTION_ARGS[NTH_NEW_MOON_CORRECTION_ARGS_SIZE][5] 
 
 /* {1} p.189 */
 #define NTH_NEW_MOON_ADDITIONAL_ARGS_SIZE 13
-const double NTH_NEW_MOON_ADDITIONAL_ARGS[13][3] = {
+static const double NTH_NEW_MOON_ADDITIONAL_ARGS[13][3] = {
     /*     I          J         L */
     { 251.88,  0.016321, 0.000165 },
     { 349.42, 36.412478, 0.000126 },
@@ -189,5 +137,42 @@ const double NTH_NEW_MOON_ADDITIONAL_ARGS[13][3] = {
     { 239.56, 25.513099, 0.000035 }
 };
 
+int __binary_search(mpfr_t *result, mpfr_t *lo, mpfr_t *hi, 
+    int (*phi)(mpfr_t *, void *args, int n_args),
+    void *args,
+    int n_args,
+    int (*mu)(mpfr_t *, mpfr_t *)
+);
+
+int __search_next(mpfr_t *result, mpfr_t *base, 
+    int (*check)(mpfr_t *x, void *args),
+    void *check_args,
+    int (*next_val)(mpfr_t *next, mpfr_t *x, void *args),
+    void *next_args
+);
+int __mod( mpfr_t *result, mpfr_t *target, mpfr_t *base );
+int __sin( mpfr_t *result, mpfr_t *degrees );
+int __cos( mpfr_t *result, mpfr_t *degrees );
+int __polynomial( mpfr_t *result, mpfr_t *x, int howmany, mpfr_t **coefs);
+int polynomial(mpfr_t *result, mpfr_t *x, int howmany, ...);
+int is_leap_year(int y);
+long gregorian_year_from_rd(long rd);
+int fixed_from_ymd(int y, int m, int d);
+int gregorian_components_from_rd(long rd, long *y, int *m, int *d);
+int ymd_seconds_from_moment(mpfr_t *moment, long *y, int *m, int *d, int *s);
+int ephemeris_correction(mpfr_t *correction, int y);
+int dynamical_moment(mpfr_t *result, mpfr_t *moment);
+int julian_centuries(mpfr_t *result, mpfr_t *moment);
+int aberration(mpfr_t *result, mpfr_t *moment);
+int nutation( mpfr_t *result, mpfr_t *moment );
+
+int solar_longitude( mpfr_t *result, mpfr_t *moment );
+int solar_longitude_before( mpfr_t *result, mpfr_t *moment, mpfr_t *phi );
+int solar_longitude_after( mpfr_t *result, mpfr_t *moment, mpfr_t *phi );
+
+int lunar_longitude( mpfr_t *result, mpfr_t *moment );
+int lunar_phase( mpfr_t *result, mpfr_t *moment );
+int nth_new_moon( mpfr_t *result, int n_int );
+int new_moon_after_from_moment(mpfr_t *result, mpfr_t *o_moment);
 #endif
 
