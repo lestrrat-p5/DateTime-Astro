@@ -6,6 +6,7 @@ use DateTime;
 
 BEGIN {
     our @EXPORT_OK = qw(
+        MEAN_TROPICAL_YEAR
         MEAN_SYNODIC_MONTH
         dt_from_moment
         ephemeris_correction

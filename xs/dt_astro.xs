@@ -190,6 +190,13 @@ MEAN_SYNODIC_MONTH()
     OUTPUT:
         RETVAL
 
+NV
+MEAN_TROPICAL_YEAR()
+    CODE:
+        RETVAL = MEAN_TROPICAL_YEAR;
+    OUTPUT:
+        RETVAL
+
 MODULE = DateTime::Astro PACKAGE = DateTime::Event::SolarTerm   PREFIX = DT_Event_SolarTerm_
 
 PROTOTYPES: DISABLE

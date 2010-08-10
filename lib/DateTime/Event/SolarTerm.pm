@@ -134,8 +134,15 @@ sub last_minor_term_index {
 
 # [1] p.250
 sub no_major_term_on {
+    # if the given $_[0] falls right on a new moon, new_moon_after
+    # may return the same date
     my $next_new_moon = new_moon_after( $_[0] );
-    return last_major_term_index( $_[0] ) == last_major_term_index( $next_new_moon );
+    if ($next_new_moon == $_[0]) {
+        $next_new_moon = new_moon_after( $_[0] + DateTime::Duration->new(days => 1));
+    }
+    my $i1 = last_major_term_index( $_[0] );
+    my $i2 = last_major_term_index( $next_new_moon );
+    return $i1 == $i2;
 }
 
 1;
