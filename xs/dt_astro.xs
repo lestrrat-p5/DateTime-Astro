@@ -188,4 +188,69 @@ MODULE = DateTime::Astro PACKAGE = DateTime::Event::SolarTerm   PREFIX = DT_Even
 
 PROTOTYPES: DISABLE
 
+mpfr_t
+DT_Event_SolarTerm_next_term_at_from_moment( moment, phi )
+        SV_TO_MPFR moment
+        SV_TO_MPFR phi
+    CODE:
+        mpfr_init(RETVAL);
+        next_term_at( &RETVAL, &moment, &phi );
+        mpfr_clear(moment);
+        mpfr_clear(phi);
+    OUTPUT:
+        RETVAL
+
+mpfr_t
+DT_Event_SolarTerm_prev_term_at_from_moment( moment, phi )
+        SV_TO_MPFR moment
+        SV_TO_MPFR phi
+    CODE:
+        mpfr_init(RETVAL);
+        prev_term_at( &RETVAL, &moment, &phi );
+        mpfr_clear(moment);
+        mpfr_clear(phi);
+    OUTPUT:
+        RETVAL
+
+mpfr_t
+DT_Event_SolarTerm_major_term_after_from_moment( moment )
+        SV_TO_MPFR moment
+    CODE:
+        mpfr_init(RETVAL);
+        major_term_after( &RETVAL, &moment );
+        mpfr_clear(moment);
+    OUTPUT:
+        RETVAL
+
+mpfr_t
+DT_Event_SolarTerm_major_term_before_from_moment( moment )
+        SV_TO_MPFR moment
+    CODE:
+        mpfr_init(RETVAL);
+        major_term_before( &RETVAL, &moment );
+        mpfr_clear(moment);
+    OUTPUT:
+        RETVAL
+
+mpfr_t
+DT_Event_SolarTerm_minor_term_after_from_moment( moment )
+        SV_TO_MPFR moment
+    CODE:
+        mpfr_init(RETVAL);
+        minor_term_after( &RETVAL, &moment );
+        mpfr_clear(moment);
+    OUTPUT:
+        RETVAL
+
+mpfr_t
+DT_Event_SolarTerm_minor_term_before_from_moment( moment )
+        SV_TO_MPFR moment
+    CODE:
+        mpfr_init(RETVAL);
+        minor_term_before( &RETVAL, &moment );
+        mpfr_clear(moment);
+    OUTPUT:
+        RETVAL
+
+
 
