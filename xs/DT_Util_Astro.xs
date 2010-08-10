@@ -1358,6 +1358,57 @@ solar_longitude_before( mpfr_t *result, mpfr_t *moment, mpfr_t *phi ) {
     return 1;
 }
 
+static int
+solar_longitude_after( mpfr_t *result, mpfr_t *moment, mpfr_t *phi ) {
+    mpfr_t tau, n, l, u;
+
+    mpfr_init_set_d( n, SOLAR_YEAR_RATE, GMP_RNDN );
+
+    {
+        mpfr_t lon, x, fullangle;
+
+        mpfr_init_set_ui(fullangle, 360, GMP_RNDN);
+        mpfr_init(lon);
+        solar_longitude( &lon, moment );
+        mpfr_init_set( x, *phi, GMP_RNDN );
+        mpfr_sub(x, x, lon, GMP_RNDN );
+        __mod( &x, &x, &fullangle );
+        mpfr_mul( n, n, x, GMP_RNDN );
+
+        mpfr_clear(lon);
+        mpfr_clear(x);
+        mpfr_clear(fullangle);
+    }
+
+    mpfr_init_set( tau, *moment, GMP_RNDN );
+    mpfr_add( tau, tau, n, GMP_RNDN );
+
+    {
+        mpfr_t x;
+        mpfr_init_set( x, tau, GMP_RNDN );
+        mpfr_sub_ui( x, x, 5, GMP_RNDN );
+        if ( mpfr_cmp (*moment, x) > 0 ) {
+            mpfr_init_set( u, *moment, GMP_RNDN );
+        } else {
+            mpfr_init_set( u, x, GMP_RNDN );
+        }
+
+        mpfr_clear(x);
+    }
+
+    mpfr_init_set(u, tau, GMP_RNDN);
+    mpfr_add_ui(u, u, 5, GMP_RNDN);
+
+    __binary_search( result, &l, &u, __solar_longitude_phi, (void *) phi, 1, __solar_longitude_mu );
+
+    mpfr_clear(tau);
+    mpfr_clear(n);
+    mpfr_clear(l);
+    mpfr_clear(u);
+    
+    return 1;
+}
+
 
 MODULE = DateTime::Util::Astro  PACKAGE = DateTime::Util::Astro   PREFIX = DT_Util_Astro_
 
@@ -1529,5 +1580,18 @@ DT_Util_Astro_solar_longitude_before_from_moment( moment, phi )
         mpfr_clear(phi);
     OUTPUT:
         RETVAL
+
+mpfr_t
+DT_Util_Astro_solar_longitude_after_from_moment( moment, phi )
+        SV_TO_MPFR moment
+        SV_TO_MPFR phi
+    CODE:
+        mpfr_init(RETVAL);
+        solar_longitude_after(&RETVAL, &moment, &phi );
+        mpfr_clear(moment);
+        mpfr_clear(phi);
+    OUTPUT:
+        RETVAL
+
 
 

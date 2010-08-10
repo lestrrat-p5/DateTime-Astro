@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
 use t::DateTime::Util::Astro::Test qw(datetime);
-use_ok "DateTime::Util::Astro", "solar_longitude", "solar_longitude_before";
+use_ok "DateTime::Util::Astro", "solar_longitude", "solar_longitude_after", "solar_longitude_before";
 
 my $DELTA_LONGITUDE = $ENV{ALLOW_SOLAR_LONGITUDE_DELTA} || 0.006;
 
@@ -73,8 +73,15 @@ foreach my $data (@data) {
 
     my $before = solar_longitude_before( $x, $expected );
     $delta = abs ($before->epoch - $dt->epoch);
-    ok $delta < 600, # XXX TODO FIX
+    ok $delta < 540, # XXX TODO FIX
         "[before = $before][expected = $dt][delta = $delta]";
+
+    $x = $dt->clone;
+    $x->subtract( days => 10);
+    my $after = solar_longitude_after( $x, $expected );
+    $delta = abs ($after->epoch - $dt->epoch);
+    ok $delta < 540,
+        "[after = $after][expected = $dt][delta = $delta]";
 }
 
 done_testing;

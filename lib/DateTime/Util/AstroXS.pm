@@ -45,4 +45,8 @@ sub solar_longitude_before {
     return dt_from_moment( solar_longitude_before_from_moment( moment( $_[0] ), $_[1] ) );
 }
 
+sub solar_longitude_after {
+    return dt_from_moment( solar_longitude_after_from_moment( moment( $_[0] ), $_[1] ) );
+}
+
 1;

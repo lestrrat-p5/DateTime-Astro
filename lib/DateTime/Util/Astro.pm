@@ -27,6 +27,8 @@ BEGIN {
         solar_longitude_from_moment
         solar_longitude_before
         solar_longitude_before_from_moment
+        solar_longitude_after
+        solar_longitude_after_from_moment
     );
     our $VERSION = '0.19999';
 
