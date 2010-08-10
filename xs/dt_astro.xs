@@ -183,6 +183,12 @@ DT_Astro_solar_longitude_after_from_moment( moment, phi )
     OUTPUT:
         RETVAL
 
+NV
+MEAN_SYNODIC_MONTH()
+    CODE:
+        RETVAL = MEAN_SYNODIC_MONTH;
+    OUTPUT:
+        RETVAL
 
 MODULE = DateTime::Astro PACKAGE = DateTime::Event::SolarTerm   PREFIX = DT_Event_SolarTerm_
 
@@ -251,6 +257,65 @@ DT_Event_SolarTerm_minor_term_before_from_moment( moment )
         mpfr_clear(moment);
     OUTPUT:
         RETVAL
+
+IV
+_constant()
+    ALIAS:
+        CHUNFEN = CHUNFEN
+        SHUNBUN = SHUNBUN
+        QINGMING = QINGMING
+        SEIMEI = SEIMEI
+        GUYU = GUYU
+        KOKUU = KOKUU
+        LIXIA = LIXIA
+        RIKKA = RIKKA
+        XIAOMAN = XIAOMAN
+        SHOMAN  = SHOMAN
+        MANGZHONG = MANGZHONG
+        BOHSHU = BOHSHU
+        XIAZHO = XIAZHO
+        GESHI = GESHI
+        SUMMER_SOLSTICE = SUMMER_SOLSTICE
+        XIAOSHU = XIAOSHU
+        SHOUSHO = SHOUSHO
+        DASHU = DASHU
+        TAISHO = TAISHO
+        LIQIU = LIQIU
+        RISSHU = RISSHU
+        CHUSHU = CHUSHU
+        SHOSHO = SHOSHO
+        BAILU = BAILU
+        HAKURO = HAKURO
+        QIUFEN = QIUFEN
+        SHUUBUN = SHUUBUN
+        HANLU = HANLU
+        KANRO = KANRO
+        SHUANGJIANG = SHUANGJIANG
+        SOHKOH = SOHKOH
+        LIDONG = LIDONG
+        RITTOH = RITTOH
+        XIAOXUE = XIAOXUE
+        SHOHSETSU = SHOHSETSU
+        DAXUE = DAXUE
+        TAISETSU = TAISETSU
+        DONGZHI = DONGZHI
+        TOHJI = TOHJI
+        WINTER_SOLSTICE = WINTER_SOLSTICE
+        XIAOHAN = XIAOHAN
+        SHOHKAN = SHOHKAN
+        DAHAN = DAHAN
+        DAIKAN = DAIKAN
+        LICHUN = LICHUN
+        RISSHUN = RISSHUN
+        YUSHUI = YUSHUI
+        USUI = USUI
+        JINGZE = JINGZE
+        KEICHITSU = KEICHITSU 
+    CODE:
+        RETVAL = ix;
+    OUTPUT:
+        RETVAL
+
 
 
 
