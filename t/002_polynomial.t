@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
 
-use_ok "DateTime::Util::Astro", "polynomial";
+use_ok "DateTime::Astro", "polynomial";
 
 like polynomial(1, 3, 2, 1), qr/^6(\.0+)?$/;
 like polynomial(2, 3, 2, 1), qr/^11(\.0+)?$/;

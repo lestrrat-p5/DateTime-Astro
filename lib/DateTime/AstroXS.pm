@@ -1,4 +1,4 @@
-package DateTime::Util::Astro;
+package DateTime::Astro;
 use strict;
 
 sub dt_from_moment {

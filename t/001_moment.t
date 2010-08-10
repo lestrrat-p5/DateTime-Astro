@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
 
-use_ok "DateTime::Util::Astro", "moment", "gregorian_components_from_rd";
+use_ok "DateTime::Astro", "moment", "gregorian_components_from_rd";
 
 
 # simple RD moments

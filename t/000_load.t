@@ -1,13 +1,13 @@
 use strict;
 use Test::More;
-use_ok "DateTime::Util::Astro";
+use_ok "DateTime::Astro";
 
-if (! exists $ENV{PERL_DATETIME_UTIL_ASTRO_BACKEND} ||
-    $ENV{PERL_DATETIME_UTIL_ASTRO_BACKEND} eq 'XS')
+if (! exists $ENV{PERL_DATETIME_ASTRO_BACKEND} ||
+    $ENV{PERL_DATETIME_ASTRO_BACKEND} eq 'XS')
 {
-    is DateTime::Util::Astro::BACKEND(), "XS";
+    is DateTime::Astro::BACKEND(), "XS";
 } else {
-    is DateTime::Util::Astro::BACKEND(), "PP";
+    is DateTime::Astro::BACKEND(), "PP";
 }
 
 done_testing;

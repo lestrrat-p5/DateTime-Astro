@@ -1,4 +1,4 @@
-package DateTime::Util::Astro;
+package DateTime::Astro;
 use strict;
 use XSLoader;
 use Exporter 'import';
@@ -34,11 +34,11 @@ BEGIN {
 
     my $backend = 'XS';
     my $explicit_xs = 0;
-    if (exists $ENV{PERL_DATETIME_UTIL_ASTRO_BACKEND} && 
-        $ENV{PERL_DATETIME_UTIL_ASTRO_BACKEND} eq 'XS') {
+    if (exists $ENV{PERL_DATETIME_ASTRO_BACKEND} && 
+        $ENV{PERL_DATETIME_ASTRO_BACKEND} eq 'XS') {
         $explicit_xs = 1;
-    } elsif ($ENV{PERL_DATETIME_UTIL_ASTRO_BACKEND}) {
-        $backend = $ENV{PERL_DATETIME_UTIL_ASTRO_BACKEND};
+    } elsif ($ENV{PERL_DATETIME_ASTRO_BACKEND}) {
+        $backend = $ENV{PERL_DATETIME_ASTRO_BACKEND};
     }
         
     my $loaded;
@@ -46,7 +46,7 @@ BEGIN {
     if ($backend ne 'PP') {
         eval {
             XSLoader::load __PACKAGE__, $VERSION;
-            require DateTime::Util::AstroXS;
+            require DateTime::AstroXS;
             $loaded = 'XS';
         };
         if (my $e = $@) {
@@ -56,7 +56,7 @@ BEGIN {
 
     if (! $loaded && ! $explicit_xs) {
         eval {
-            require DateTime::Util::AstroPP;
+            require DateTime::AstroPP;
             $loaded = 'PP';
         };
         if (my $e = $@) {
@@ -65,7 +65,7 @@ BEGIN {
     }
 
     if (! $loaded ) {
-        die("DateTime::Util::Astro: Failed to load backend implementations. Can't proceed\n" . join("\n", @errors));
+        die("DateTime::Astro: Failed to load backend implementations. Can't proceed\n" . join("\n", @errors));
     }
 
     eval "sub BACKEND() { '$loaded' }";
@@ -84,11 +84,11 @@ __END__
 
 =head1 NAME
 
-DateTime::Util::Astro - Functions For Astromical Calendars
+DateTime::Astro - Functions For Astromical Calendars
 
 =head1 DESCRIPTION
 
-DateTime::Util::Astro implements functions used in astronomical calendars.
+DateTime::Astro implements functions used in astronomical calendars.
 
 This module is best used in environments where a C compiler and the MPFR arbitrary precision math library is installed. It can fallback to using Math::BigInt, but that would pretty much render it useless because of its speed and loss of accuracy that may creep up while doing Perl to C struct conversions.
 

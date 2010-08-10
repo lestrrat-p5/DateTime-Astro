@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
-use t::DateTime::Util::Astro::Test qw(datetime);
-use_ok "DateTime::Util::Astro", "solar_longitude", "solar_longitude_after", "solar_longitude_before";
+use t::DateTime::Astro::Test qw(datetime);
+use_ok "DateTime::Astro", "solar_longitude", "solar_longitude_after", "solar_longitude_before";
 
 my $DELTA_LONGITUDE = $ENV{ALLOW_SOLAR_LONGITUDE_DELTA} || 0.006;
 

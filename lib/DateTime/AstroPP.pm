@@ -1,4 +1,4 @@
-package DateTime::Util::Astro;
+package DateTime::Astro;
 use strict;
 use Math::BigFloat ('lib'     => 'GMP,Pari,FastCalc');
 use Math::BigInt   ('upgrade' => 'Math::BigFloat');
@@ -186,9 +186,9 @@ use constant SOLAR_LONGITUDE_ARGS => [
 ];
 
 
-sub DateTime::Util::Astro::MemoryCache::set { shift->{$_[0]} = $_[1] }
-sub DateTime::Util::Astro::MemoryCache::get { shift->{$_[0]} }
-our $CACHE = (bless {}, 'DateTime::Util::Astro::MemoryCache');
+sub DateTime::Astro::MemoryCache::set { shift->{$_[0]} = $_[1] }
+sub DateTime::Astro::MemoryCache::get { shift->{$_[0]} }
+our $CACHE = (bless {}, 'DateTime::Astro::MemoryCache');
 
 sub __bigfloat { Math::BigFloat->new($_[0]) }
 sub __mod { return $_[0] - POSIX::floor( $_[0] / $_[1] ) * $_[1] }
@@ -388,7 +388,7 @@ sub nth_new_moon {
 }
 
 sub lunar_phase_from_moment {
-    return __mod( lunar_longitude_from_moment($_[0]) - DateTime::Util::Astro::Sun::solar_longitude_from_moment($_[0]), 360);
+    return __mod( lunar_longitude_from_moment($_[0]) - DateTime::Astro::Sun::solar_longitude_from_moment($_[0]), 360);
 }
 
 sub dynamical_moment {

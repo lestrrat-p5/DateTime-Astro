@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
 
-use_ok "DateTime::Util::Astro", "ephemeris_correction";
+use_ok "DateTime::Astro", "ephemeris_correction";
 
 # XXX - have not checked that this is the correct number
 TODO: {

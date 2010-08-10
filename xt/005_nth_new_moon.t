@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
 
-use_ok "DateTime::Util::Astro", "nth_new_moon", "lunar_longitude_from_moment", "solar_longitude_from_moment", "dt_from_moment";
+use_ok "DateTime::Astro", "nth_new_moon", "lunar_longitude_from_moment", "solar_longitude_from_moment", "dt_from_moment";
 
 my $DELTA_LONGITUDE = $ENV{ALLOW_NEW_MOON_DELTA_LONGITUDE} || 0.018;
 

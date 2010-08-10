@@ -1,11 +1,11 @@
 #include "dt_astro.h"
 
-MODULE = DateTime::Util::Astro PACKAGE = DateTime::Util::Astro   PREFIX = DT_Util_Astro_
+MODULE = DateTime::Astro PACKAGE = DateTime::Astro   PREFIX = DT_Astro_
 
 PROTOTYPES: DISABLE
 
 mpfr_t
-DT_Util_Astro_polynomial(x, ...)
+DT_Astro_polynomial(x, ...)
         SV_TO_MPFR x;
     CODE:
         mpfr_init(RETVAL);
@@ -32,7 +32,7 @@ DT_Util_Astro_polynomial(x, ...)
 
 
 mpfr_t
-DT_Util_Astro_ephemeris_correction(year)
+DT_Astro_ephemeris_correction(year)
         int year;
     CODE:
         mpfr_init(RETVAL);
@@ -41,7 +41,7 @@ DT_Util_Astro_ephemeris_correction(year)
         RETVAL
 
 mpfr_t
-DT_Util_Astro_dynamical_moment(moment)
+DT_Astro_dynamical_moment(moment)
         SV_TO_MPFR moment;
     CODE:
         mpfr_init(RETVAL);
@@ -51,7 +51,7 @@ DT_Util_Astro_dynamical_moment(moment)
         RETVAL
 
 long
-DT_Util_Astro_gregorian_year_from_rd(rd)
+DT_Astro_gregorian_year_from_rd(rd)
         long rd;
     CODE:
         RETVAL = gregorian_year_from_rd(rd);
@@ -59,7 +59,7 @@ DT_Util_Astro_gregorian_year_from_rd(rd)
         RETVAL
 
 void
-DT_Util_Astro_gregorian_components_from_rd(rd)
+DT_Astro_gregorian_components_from_rd(rd)
         long rd;
     PREINIT:
         long y;
@@ -73,7 +73,7 @@ DT_Util_Astro_gregorian_components_from_rd(rd)
         mPUSHi(d);
 
 void
-DT_Util_Astro_ymd_seconds_from_moment(moment)
+DT_Astro_ymd_seconds_from_moment(moment)
         SV_TO_MPFR moment;
     PREINIT:
         long y;
@@ -90,7 +90,7 @@ DT_Util_Astro_ymd_seconds_from_moment(moment)
 
 
 mpfr_t
-DT_Util_Astro_julian_centuries_from_moment(moment)
+DT_Astro_julian_centuries_from_moment(moment)
         SV_TO_MPFR moment;
     CODE:
         mpfr_init(RETVAL);
@@ -101,7 +101,7 @@ DT_Util_Astro_julian_centuries_from_moment(moment)
 
 
 mpfr_t
-DT_Util_Astro_nth_new_moon(n)
+DT_Astro_nth_new_moon(n)
          int n;
     CODE:
         mpfr_init(RETVAL);
@@ -110,7 +110,7 @@ DT_Util_Astro_nth_new_moon(n)
         RETVAL
 
 mpfr_t
-DT_Util_Astro_lunar_longitude_from_moment(moment)
+DT_Astro_lunar_longitude_from_moment(moment)
         SV_TO_MPFR moment;
     CODE:
         mpfr_init(RETVAL);
@@ -120,7 +120,7 @@ DT_Util_Astro_lunar_longitude_from_moment(moment)
         RETVAL
 
 mpfr_t
-DT_Util_Astro_solar_longitude_from_moment(moment)
+DT_Astro_solar_longitude_from_moment(moment)
         SV_TO_MPFR moment;
     CODE:
         mpfr_init(RETVAL);
@@ -130,7 +130,7 @@ DT_Util_Astro_solar_longitude_from_moment(moment)
         RETVAL
 
 mpfr_t
-DT_Util_Astro_lunar_phase_from_moment(moment)
+DT_Astro_lunar_phase_from_moment(moment)
         SV_TO_MPFR moment
     CODE:
         mpfr_init(RETVAL);
@@ -140,7 +140,7 @@ DT_Util_Astro_lunar_phase_from_moment(moment)
         RETVAL
 
 mpfr_t
-DT_Util_Astro_new_moon_after_from_moment(moment)
+DT_Astro_new_moon_after_from_moment(moment)
         SV_TO_MPFR moment
     CODE:
         mpfr_init(RETVAL);
@@ -150,7 +150,7 @@ DT_Util_Astro_new_moon_after_from_moment(moment)
         RETVAL
 
 mpfr_t
-DT_Util_Astro_new_moon_before_from_moment(moment)
+DT_Astro_new_moon_before_from_moment(moment)
         SV_TO_MPFR moment
     CODE:
         mpfr_init(RETVAL);
@@ -160,7 +160,7 @@ DT_Util_Astro_new_moon_before_from_moment(moment)
         RETVAL
 
 mpfr_t
-DT_Util_Astro_solar_longitude_before_from_moment( moment, phi )
+DT_Astro_solar_longitude_before_from_moment( moment, phi )
         SV_TO_MPFR moment
         SV_TO_MPFR phi
     CODE:
@@ -172,7 +172,7 @@ DT_Util_Astro_solar_longitude_before_from_moment( moment, phi )
         RETVAL
 
 mpfr_t
-DT_Util_Astro_solar_longitude_after_from_moment( moment, phi )
+DT_Astro_solar_longitude_after_from_moment( moment, phi )
         SV_TO_MPFR moment
         SV_TO_MPFR phi
     CODE:
@@ -183,5 +183,9 @@ DT_Util_Astro_solar_longitude_after_from_moment( moment, phi )
     OUTPUT:
         RETVAL
 
+
+MODULE = DateTime::Astro PACKAGE = DateTime::Event::SolarTerm   PREFIX = DT_Event_SolarTerm_
+
+PROTOTYPES: DISABLE
 
 

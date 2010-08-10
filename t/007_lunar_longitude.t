@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
 use Test::Exception;
-use DateTime::Util::Astro qw(moment new_moon_after new_moon_before);
+use DateTime::Astro qw(moment new_moon_after new_moon_before);
 
 # 19:00 nekokak: ちなみに１９９８年１月２８日１５時０分５０秒４は新月です！
 # lestrrat: これは日本時間だから、UTCだと9時間ほどずれる

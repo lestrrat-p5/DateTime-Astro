@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
 
-use_ok "DateTime::Util::Astro", "moment", "gregorian_year_from_rd";
+use_ok "DateTime::Astro", "moment", "gregorian_year_from_rd";
 
 
 for my $selected_y ( 1, 99, 389, 1900, 2000 ) {

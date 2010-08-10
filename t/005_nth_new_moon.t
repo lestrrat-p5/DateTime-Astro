@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
 
-use_ok "DateTime::Util::Astro",
+use_ok "DateTime::Astro",
     "nth_new_moon",
     "lunar_longitude_from_moment",
     "solar_longitude_from_moment",

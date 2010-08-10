@@ -1,4 +1,4 @@
-package t::DateTime::Util::Astro::Test;
+package t::DateTime::Astro::Test;
 use strict;
 use Exporter 'import';
 use DateTime;

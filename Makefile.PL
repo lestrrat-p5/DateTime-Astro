@@ -1,7 +1,7 @@
 use inc::Module::Install;
 
-name 'DateTime-Util-Astro';
-all_from 'lib/DateTime/Util/Astro.pm';
+name 'DateTime-Astro';
+all_from 'lib/DateTime/Astro.pm';
 
 use_ppport;
 cc_warnings;

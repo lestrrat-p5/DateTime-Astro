@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
 
-use_ok "DateTime::Util::Astro",
+use_ok "DateTime::Astro",
     "julian_centuries",
     "julian_centuries_from_moment"
 ;
