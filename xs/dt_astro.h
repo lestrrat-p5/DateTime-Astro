@@ -222,6 +222,7 @@ int nutation( mpfr_t *result, mpfr_t *moment );
 int solar_longitude( mpfr_t *result, mpfr_t *moment );
 int solar_longitude_before( mpfr_t *result, mpfr_t *moment, mpfr_t *phi );
 int solar_longitude_after( mpfr_t *result, mpfr_t *moment, mpfr_t *phi );
+int estimate_prior_solar_longitude(mpfr_t *result, mpfr_t *moment, mpfr_t *phi);
 
 int lunar_longitude( mpfr_t *result, mpfr_t *moment );
 int lunar_phase( mpfr_t *result, mpfr_t *moment );
