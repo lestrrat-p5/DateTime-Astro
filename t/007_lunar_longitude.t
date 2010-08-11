@@ -39,7 +39,7 @@ lives_ok {
         if (moment($next) - moment($dt) < 29.5) {
             my $got = new_moon_after( $dt );
             my $delta = abs(moment($got) - moment($next));
-            ok $delta < 60, "new moon after $dt -> $got (expected $next) delta = $delta";
+            ok $delta < 1, "new moon after $dt -> $got (expected $next) delta = $delta";
         }
         $dt = $next;
     }
@@ -49,7 +49,7 @@ lives_ok {
         if (moment($dt) - moment($prev) < 29.5) {
             my $got = new_moon_before( $dt );
             my $delta = abs(moment($prev) - moment($got));
-            ok $delta < 60, "new moon before $dt -> $got (expected $prev) delta = $delta";
+            ok $delta < 1, "new moon before $dt -> $got (expected $prev) delta = $delta";
         }
         $dt = $prev;
     }
@@ -61,7 +61,7 @@ __DATA__
 21014 1700  1 20  4 20
 21015 1700  2 18 23 33
 21016 1700  3 20 16 46
-21017 1700  4 19  6 51
+21017 1700  4 19  6 51 55
 21018 1700  5 18 17 45
 21019 1700  6 17  2 16
 21020 1700  7 16  9 34

@@ -2,6 +2,13 @@
 #define __DT_ASTRO_LUNAR_C__
 #include "dt_astro.h"
 
+extern 
+struct DT_ASTRO_GLOBAL_CACHE {
+    int cache_size;
+    mpfr_t **cache;
+} dt_astro_global_cache;
+
+
 int
 lunar_longitude( mpfr_t *result, mpfr_t *moment ) {
 
@@ -309,6 +316,20 @@ int
 nth_new_moon( mpfr_t *result, int n_int ) {
     mpfr_t n, k, C, approx, E, solar_anomaly, lunar_anomaly, moon_argument, omega, extra, correction, additional;
 
+#if(0)
+PerlIO_printf(PerlIO_stderr(), "nth_new_moon = %d\n", n_int );
+#endif
+    if ( dt_astro_global_cache.cache_size > n_int ) {
+        mpfr_t *cached = dt_astro_global_cache.cache[n_int];
+        if (cached != NULL) {
+#if(0)
+            PerlIO_printf(PerlIO_stderr(), "Cache HIT for %d\n", n_int);
+#endif
+            mpfr_set( *result, *cached, GMP_RNDN );
+            return 1;
+        }
+    }
+
     mpfr_init_set_ui( n, n_int, GMP_RNDN );
 
     /* k = n - 24724 */
@@ -510,6 +531,22 @@ mpfr_fprintf(stderr,
     mpfr_clear(correction);
     mpfr_clear(additional);
 
+    if (dt_astro_global_cache.cache_size < n_int + 1) {
+        Newxz( dt_astro_global_cache.cache, n_int + 1, mpfr_t *);
+        dt_astro_global_cache.cache_size = n_int + 1;
+    }
+
+    {
+        mpfr_t *new_data;
+        Newxz( new_data, 1, mpfr_t );
+        mpfr_init( *new_data );
+        mpfr_set( *new_data, *result, GMP_RNDN );
+        dt_astro_global_cache.cache[n_int] = new_data;
+#if (0)
+        PerlIO_printf(PerlIO_stderr(), "CACHE set for %d\n", n_int);
+#endif
+    }
+
     return 1;
 }
 
@@ -532,6 +569,7 @@ mpfr_fprintf(stderr,
     return ok;
 }
 
+#if (0)
 static int
 __next_new_moon_before(mpfr_t *next, mpfr_t *x, void *args) {
     ((void) args);
@@ -559,6 +597,7 @@ mpfr_fprintf(stderr,
     return ok;
 }
 
+
 static int
 __next_new_moon_after(mpfr_t *next, mpfr_t *x, void *args) {
     ((void) args);
@@ -567,8 +606,69 @@ __next_new_moon_after(mpfr_t *next, mpfr_t *x, void *args) {
     return 1;
 }
 
+#endif
+
+/* TODO: Check out errata 269 on 
+    http://emr.cs.uiuc.edu/home/reingold/calendar-book/second-edition/errata.pdf
+*/
 int
 new_moon_before_from_moment(mpfr_t *result, mpfr_t *o_moment) {
+    mpfr_t t0, phi, big_n, radian, delta;
+    mpfr_t fullangle;
+    long n;
+
+    mpfr_init(t0);
+    nth_new_moon(&t0, 0);
+
+    mpfr_init(phi);
+    lunar_phase( &phi, o_moment );
+
+    mpfr_init_set(delta, *o_moment, GMP_RNDN);
+    mpfr_sub(delta, delta, t0, GMP_RNDN);
+    mpfr_div_d(delta, delta, MEAN_SYNODIC_MONTH, GMP_RNDN);
+
+    mpfr_init_set_ui( fullangle, 360, GMP_RNDN );
+    mpfr_init_set(radian, phi, GMP_RNDN);
+    mpfr_div(radian, radian, fullangle, GMP_RNDN );
+
+    mpfr_init_set(big_n, delta, GMP_RNDN);
+    mpfr_sub(big_n, big_n, radian, GMP_RNDN);
+    mpfr_round(big_n, big_n);
+
+    n = mpfr_get_si(big_n, GMP_RNDN);
+
+    mpfr_clear(t0);
+    mpfr_clear(phi);
+    mpfr_clear(big_n);
+    mpfr_clear(radian);
+    mpfr_clear(delta);
+    mpfr_clear(fullangle);
+
+    {
+        int increment = 1;
+        mpfr_t last_good, tmp;
+        mpfr_init(tmp);
+        mpfr_init(last_good);
+
+        n = n - 1;
+        nth_new_moon( &last_good, n );
+        while (increment) {
+            nth_new_moon( &tmp, n );
+            if (mpfr_cmp( tmp, *o_moment ) < 0) {
+                n = n + 1;
+                mpfr_set( last_good, tmp, GMP_RNDN );
+            } else {
+                increment = 0;
+                mpfr_set( *result, last_good, GMP_RNDN );
+            }
+        }
+                
+        mpfr_clear(tmp);
+        mpfr_clear(last_good);
+    }
+
+    return 1;
+/*
     mpfr_t phi, n;
     mpfr_t moment;
 
@@ -610,59 +710,79 @@ new_moon_before_from_moment(mpfr_t *result, mpfr_t *o_moment) {
     mpfr_clear(n);
     mpfr_clear(moment);
     return 1;
+*/
 }
 
 int
 new_moon_after_from_moment(mpfr_t *result, mpfr_t *o_moment) {
-    mpfr_t phi, n, moment;
+    mpfr_t t0, phi, big_n, radian, delta;
+    mpfr_t fullangle;
+    long n;
 
-    mpfr_init(n);
+    mpfr_init(t0);
+    nth_new_moon(&t0, 0);
+
     mpfr_init(phi);
-    mpfr_init_set( moment, *o_moment, GMP_RNDN );
+    lunar_phase( &phi, o_moment );
 
-    lunar_phase( &phi, &moment );
 
-    {
-        mpfr_t a;
+    mpfr_init_set(delta, *o_moment, GMP_RNDN);
+    mpfr_sub(delta, delta, t0, GMP_RNDN);
+    mpfr_div_d(delta, delta, MEAN_SYNODIC_MONTH, GMP_RNDN);
 
-        mpfr_init_set(a, phi, GMP_RNDN);
-        mpfr_div_ui(a, a, 360, GMP_RNDN);
+    mpfr_init_set_ui( fullangle, 360, GMP_RNDN );
+    mpfr_init_set(radian, phi, GMP_RNDN);
+    mpfr_div(radian, radian, fullangle, GMP_RNDN );
 
-        mpfr_init_set(n, moment, GMP_RNDN);
-        mpfr_sub_d(n, n, ZEROTH_NEW_MOON, GMP_RNDN);
-        mpfr_div_d(n, n, MEAN_SYNODIC_MONTH, GMP_RNDN);
-#if (0)
-mpfr_fprintf(stderr,
-    "moment = %.10RNf, a = %.10RNf, phi = %.10RNf\n",
-    moment,
-    a, phi);
-#endif
-        mpfr_sub(n, n, a, GMP_RNDN);
-        mpfr_round(n, n);
-        mpfr_clear(a);
-    }
+    mpfr_init_set(big_n, delta, GMP_RNDN);
+    mpfr_sub(big_n, big_n, radian, GMP_RNDN);
+    mpfr_round(big_n, big_n);
 
-    {
-        mpfr_t nm_index;
-        int nm;
+    n = mpfr_get_si(big_n, GMP_RNDN);
 
-        mpfr_init(nm_index);
-        __search_next( &nm_index, &n,
-            __check_new_moon_after, (void *) moment,
-            __next_new_moon_after, NULL );
-        nm = mpfr_get_ui(nm_index, GMP_RNDN);
-
-        nth_new_moon(result, nm);
-        mpfr_clear(nm_index);
-    }
-
-#if (0)
-mpfr_fprintf(stderr,
-    "result -> %.10RNf\n", *result );
-#endif
-
+    mpfr_clear(t0);
     mpfr_clear(phi);
-    mpfr_clear(n);
+    mpfr_clear(big_n);
+    mpfr_clear(radian);
+    mpfr_clear(delta);
+    mpfr_clear(fullangle);
+
+    nth_new_moon( result, n );
+#if (0)
+mpfr_fprintf(stderr,
+    "got result = %.10RNf against %.10RNf\n",
+        result,
+        o_moment);
+#endif
+
+    {
+        /* if the result and moment are too close to each other, we
+           wrongly match the same time. 
+           fractional parts below 0.0001 doesn't make any change to
+           the calculation, so we make that exception, and make sure
+           to think of those two as the same
+        */
+        int cmp_result;
+        mpfr_t delta;
+
+        mpfr_init(delta);
+        do {
+            cmp_result = mpfr_cmp( *result, *o_moment );
+            if (cmp_result > 0) {
+                mpfr_dim(delta, *result, *o_moment, GMP_RNDN);
+                if (mpfr_cmp_d(delta, 0.001) <= 0) {
+                    cmp_result = 0;
+                }
+            }
+
+            if (cmp_result <= 0) {
+                n = n + 1;
+                nth_new_moon( result, n );
+            }
+        } while (cmp_result <= 0);
+        mpfr_clear(delta);
+    }
+
     return 1;
 }
 

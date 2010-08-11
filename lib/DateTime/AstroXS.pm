@@ -49,4 +49,12 @@ sub solar_longitude_after {
     return dt_from_moment( solar_longitude_after_from_moment( moment( $_[0] ), $_[1] ) );
 }
 
+BEGIN {
+    _init_global_cache();
+}
+
+END {
+    _clear_global_cache();
+}
+
 1;

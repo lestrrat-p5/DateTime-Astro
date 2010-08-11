@@ -1,8 +1,39 @@
 #include "dt_astro.h"
 
+struct DT_ASTRO_GLOBAL_CACHE {
+    int cache_size;
+    mpfr_t **cache;
+} dt_astro_global_cache;
+
+static void
+DT_Astro__init_global_cache() {
+    dt_astro_global_cache.cache_size = 0;
+    dt_astro_global_cache.cache = NULL;
+}
+
+static void
+DT_Astro__clear_global_cache() {
+    int i;
+    for(i = 0; i < dt_astro_global_cache.cache_size; i++ ) {
+        mpfr_t *v = dt_astro_global_cache.cache[i];
+        if (v != NULL) {
+            mpfr_clear(*v);
+            Safefree(v);
+        }
+    }
+    Safefree(dt_astro_global_cache.cache);
+}
+
 MODULE = DateTime::Astro PACKAGE = DateTime::Astro   PREFIX = DT_Astro_
 
 PROTOTYPES: DISABLE
+
+void
+DT_Astro__init_global_cache()
+    
+
+void
+DT_Astro__clear_global_cache()
 
 mpfr_t
 DT_Astro_polynomial(x, ...)
