@@ -4,6 +4,7 @@ use DateTime::Set;
 use DateTime::Astro qw(dt_from_moment moment new_moon_after solar_longitude);
 use Exporter 'import';
 use POSIX ();
+use constant DEBUG => 0;
 
 our @EXPORT_OK = qw(
     major_term_after
@@ -134,14 +135,24 @@ sub last_minor_term_index {
 
 # [1] p.250
 sub no_major_term_on {
-    # if the given $_[0] falls right on a new moon, new_moon_after
-    # may return the same date
-    my $next_new_moon = new_moon_after( $_[0] );
-    if ($next_new_moon == $_[0]) {
-        $next_new_moon = new_moon_after( $_[0] + DateTime::Duration->new(days => 1));
+    my $next_new_moon = new_moon_after( $_[0] + DateTime::Duration->new(days => 1) );
+
+    # normalize to midday
+    if ($next_new_moon->hour >= 12) {
+        $next_new_moon->set(hour => 12, minute => 0, second => 0);
+    } else {
+        $next_new_moon->subtract(days => 1);
+        $next_new_moon->set(hour => 12, minute => 0, second => 0);
     }
+
     my $i1 = last_major_term_index( $_[0] );
     my $i2 = last_major_term_index( $next_new_moon );
+
+    if (DEBUG) {
+        print STDERR "major term on $_[0] -> ",
+            $i1 == $i2 ? "YES" : "NO", "\n";
+    }
+
     return $i1 == $i2;
 }
 
