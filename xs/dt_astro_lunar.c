@@ -259,7 +259,7 @@ lunar_phase( mpfr_t *result, mpfr_t *moment ) {
 }
 
 static inline void
-__adjust_lunar_phase_to_zero(mpfr_t *result) {
+adjust_lunar_phase_to_zero(mpfr_t *result) {
     mpfr_t ll, delta;
     int mode = -1;
     int loop = 1;
@@ -516,7 +516,7 @@ mpfr_fprintf(stderr,
     mpfr_add(*result, *result, extra, GMP_RNDN);
     mpfr_add(*result, *result, additional, GMP_RNDN);
 
-    __adjust_lunar_phase_to_zero( result );
+    adjust_lunar_phase_to_zero( result );
 
     mpfr_clear(n);
     mpfr_clear(k);
@@ -549,64 +549,6 @@ mpfr_fprintf(stderr,
 
     return 1;
 }
-
-static int
-__check_new_moon_before(mpfr_t *x, void *args) {
-    mpfr_t result;
-    int ok;
-
-    int n = mpfr_get_si(*x, GMP_RNDN);
-    mpfr_init(result);
-    nth_new_moon(&result, n),
-#if (0)
-mpfr_fprintf(stderr,
-    "%d-th moon comparing %.10RNf against %.10RNf\n",
-        n,
-        result, *((mpfr_t *) args));
-#endif
-    ok = mpfr_cmp(result, *((mpfr_t *) args)) < 0;
-    mpfr_clear(result);
-    return ok;
-}
-
-#if (0)
-static int
-__next_new_moon_before(mpfr_t *next, mpfr_t *x, void *args) {
-    ((void) args);
-    mpfr_set(*next, *x, GMP_RNDN);
-    mpfr_sub_ui(*next, *next, 1, GMP_RNDN);
-    return 1;
-}
-
-static int
-__check_new_moon_after(mpfr_t *x, void *args) {
-    mpfr_t result;
-    int ok;
-
-    int n = mpfr_get_si(*x, GMP_RNDN);
-    mpfr_init(result);
-    nth_new_moon(&result, n),
-#if (0)
-mpfr_fprintf(stderr,
-    "%d-th moon comparing %.10RNf against %.10RNf\n",
-        n,
-        result, *((mpfr_t *) args));
-#endif
-    ok = mpfr_cmp(result, *((mpfr_t *) args)) > 0;
-    mpfr_clear(result);
-    return ok;
-}
-
-
-static int
-__next_new_moon_after(mpfr_t *next, mpfr_t *x, void *args) {
-    ((void) args);
-    mpfr_set(*next, *x, GMP_RNDN);
-    mpfr_add_ui(*next, *next, 1, GMP_RNDN);
-    return 1;
-}
-
-#endif
 
 /* TODO: Check out errata 269 on 
     http://emr.cs.uiuc.edu/home/reingold/calendar-book/second-edition/errata.pdf
@@ -668,49 +610,6 @@ new_moon_before_from_moment(mpfr_t *result, mpfr_t *o_moment) {
     }
 
     return 1;
-/*
-    mpfr_t phi, n;
-    mpfr_t moment;
-
-    mpfr_init(n);
-    mpfr_init(phi);
-    mpfr_init_set(moment, *o_moment, GMP_RNDN);
-
-    lunar_phase( &phi, &moment );
-
-    {
-        mpfr_t a;
-
-        mpfr_init_set(a, phi, GMP_RNDN);
-        mpfr_div_ui(a, a, 360, GMP_RNDN);
-
-        mpfr_init_set(n, moment, GMP_RNDN);
-        mpfr_sub_d(n, n, ZEROTH_NEW_MOON, GMP_RNDN);
-        mpfr_div_d(n, n, MEAN_SYNODIC_MONTH, GMP_RNDN);
-        mpfr_sub(n, n, a, GMP_RNDN);
-        mpfr_round(n, n);
-        mpfr_clear(a);
-    }
-
-    {
-        mpfr_t nm_index;
-        int nm;
-
-        mpfr_init(nm_index);
-        __search_next( &nm_index, &n,
-            __check_new_moon_before, (void *) &moment,
-            __next_new_moon_before, NULL );
-        nm = mpfr_get_ui(nm_index, GMP_RNDN);
-
-        nth_new_moon(result, nm);
-        mpfr_clear(nm_index);
-    }
-
-    mpfr_clear(phi);
-    mpfr_clear(n);
-    mpfr_clear(moment);
-    return 1;
-*/
 }
 
 int
