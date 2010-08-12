@@ -51,7 +51,7 @@ DT_Astro_polynomial(x, ...)
                 mpfr_init_set_str( *coefs[i - 1], SvPV_nolen(ST(i)), 10, GMP_RNDN);
             }
 
-            __polynomial(&RETVAL, &x, items - 1, coefs);
+            dt_astro_polynomial(&RETVAL, &x, items - 1, coefs);
             for( i = i; i < items; i++ ) {
                 mpfr_clear( *coefs[i - 1] );
                 Safefree(*coefs[i - 1]);
