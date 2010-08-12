@@ -234,6 +234,8 @@ int next_term_at( mpfr_t *result, mpfr_t *moment, mpfr_t *phi );
 int prev_term_at( mpfr_t *result, mpfr_t *moment, mpfr_t *phi );
 int major_term_after( mpfr_t *result, mpfr_t *moment );
 int major_term_before( mpfr_t *result, mpfr_t *moment );
+int minor_term_after( mpfr_t *result, mpfr_t *moment );
+int minor_term_before( mpfr_t *result, mpfr_t *moment );
 
 #endif
 
