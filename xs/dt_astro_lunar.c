@@ -144,7 +144,7 @@ lunar_longitude( mpfr_t *result, mpfr_t *moment ) {
             mpfr_add(a, a, x, GMP_RNDN);
             mpfr_add(a, a, y, GMP_RNDN);
             mpfr_add(a, a, z, GMP_RNDN);
-            __sin(&a, &a);
+            dt_astro_sin(&a, &a);
 
             mpfr_mul(a, a, v, GMP_RNDN);
             mpfr_mul(a, a, b, GMP_RNDN);
@@ -172,7 +172,7 @@ lunar_longitude( mpfr_t *result, mpfr_t *moment ) {
         mpfr_mul_d(b, b, 131.849, GMP_RNDN);
 
         mpfr_add(a, a, b, GMP_RNDN);
-        __sin(&a, &a);
+        dt_astro_sin(&a, &a);
         mpfr_mul_d(venus, a, 0.003957, GMP_RNDN );
         mpfr_clear(a);
         mpfr_clear(b);
@@ -186,7 +186,7 @@ lunar_longitude( mpfr_t *result, mpfr_t *moment ) {
         mpfr_mul_d(b, b, 479264.29, GMP_RNDN);
     
         mpfr_add(a, a, b, GMP_RNDN);
-        __sin(&a, &a);
+        dt_astro_sin(&a, &a);
         mpfr_mul_d(jupiter, a, 0.000318, GMP_RNDN );
         mpfr_clear(a);
         mpfr_clear(b);
@@ -197,7 +197,7 @@ lunar_longitude( mpfr_t *result, mpfr_t *moment ) {
         mpfr_init(flat_earth);
         mpfr_init_set(a, mean_moon, GMP_RNDN);
         mpfr_sub(a, a, moon_node, GMP_RNDN);
-        __sin(&a, &a);
+        dt_astro_sin(&a, &a);
         mpfr_mul_d(flat_earth, a, 0.001962, GMP_RNDN);
         mpfr_clear(a);
     }
@@ -231,7 +231,7 @@ mpfr_fprintf(stderr,
 mpfr_fprintf(stderr, "lunar = mod(%.10RNf) = ", *result );
 #endif
 #endif
-    __mod(result, result, &fullangle);
+    dt_astro_mod(result, result, &fullangle);
 #ifdef ANNOYING_DEBUG
 #if (ANNOYING_DEBUG)
 mpfr_fprintf(stderr, "%.10RNf\n", *result );
@@ -250,7 +250,7 @@ lunar_phase( mpfr_t *result, mpfr_t *moment ) {
     solar_longitude( &sl, moment );
     lunar_longitude( &ll, moment );
     mpfr_sub(*result, ll, sl, GMP_RNDN );
-    __mod(result, result, &fullangle);
+    dt_astro_mod(result, result, &fullangle);
 
     mpfr_clear(sl);
     mpfr_clear(ll);
@@ -442,7 +442,7 @@ mpfr_fprintf(stderr,
         mpfr_init_set_d(b, 132.8475848, GMP_RNDN);
         mpfr_init_set_d(c, -0.009173, GMP_RNDN);
         polynomial(&extra, &c, 3, &a, &b, &c);
-        __sin(&extra, &extra);
+        dt_astro_sin(&extra, &extra);
         mpfr_mul_d(extra, extra, 0.000325, GMP_RNDN);
         mpfr_clear(a);
         mpfr_clear(b);
@@ -450,7 +450,7 @@ mpfr_fprintf(stderr,
     }
 
     mpfr_init(correction);
-    __sin(&correction, &omega);
+    dt_astro_sin(&correction, &omega);
     mpfr_mul_d(correction, correction, -0.00017, GMP_RNDN);
 
     {
@@ -469,7 +469,7 @@ mpfr_fprintf(stderr,
 
             mpfr_add(x, x, y, GMP_RNDN);
             mpfr_add(x, x, z, GMP_RNDN);
-            __sin(&x, &x);
+            dt_astro_sin(&x, &x);
 
             mpfr_init(a);
             mpfr_pow(a, E, w, GMP_RNDN);
@@ -498,7 +498,7 @@ mpfr_fprintf(stderr,
 
             mpfr_mul(j, j, k, GMP_RNDN);
             mpfr_add(j, j, i, GMP_RNDN);
-            __sin(&j, &j);
+            dt_astro_sin(&j, &j);
             mpfr_mul(l, l, j, GMP_RNDN);
 
             mpfr_add(additional, additional, l, GMP_RNDN);

@@ -83,7 +83,7 @@ mpfr_fprintf(stderr,
             mpfr_init_set_d( c, SOLAR_LONGITUDE_ARGS[i][2], GMP_RNDN );
             mpfr_mul(c, c, C, GMP_RNDN);
             mpfr_add(b, b, c, GMP_RNDN);
-            __sin(&b, &b);
+            dt_astro_sin(&b, &b);
             mpfr_mul(a, a, b, GMP_RNDN);
             mpfr_add(fugly, fugly, a, GMP_RNDN);
             mpfr_clear(a);
@@ -131,7 +131,7 @@ mpfr_fprintf(stderr,
 mpfr_fprintf(stderr, "(solar) mod(%.10RNf) = ", *result );
 #endif
 #endif
-    __mod( result, result, &fullangle );
+    dt_astro_mod( result, result, &fullangle );
 #ifdef ANNOYING_DEBUG
 #if (ANNOYING_DEBUG)
 mpfr_fprintf(stderr, "%.10RNf\n", *result );
@@ -163,7 +163,7 @@ estimate_prior_solar_longitude(mpfr_t *result, mpfr_t *moment, mpfr_t *phi) {
 
         solar_longitude( &tmp, moment );
         mpfr_sub( tmp, tmp, *phi, GMP_RNDN );
-        __mod( &tmp, &tmp, &fullangle );
+        dt_astro_mod( &tmp, &tmp, &fullangle );
         mpfr_mul_d( tmp, tmp, SOLAR_YEAR_RATE, GMP_RNDN );
 
         mpfr_sub( tau, tau, tmp, GMP_RNDN );
@@ -178,7 +178,7 @@ estimate_prior_solar_longitude(mpfr_t *result, mpfr_t *moment, mpfr_t *phi) {
             mpfr_sub( tau_lon, tau_lon, *phi, GMP_RNDN );
             mpfr_add_ui( tau_lon, tau_lon, 180, GMP_RNDN );
 
-            __mod( &delta, &tau_lon, &fullangle );
+            dt_astro_mod( &delta, &tau_lon, &fullangle );
 
             mpfr_clear(tau_lon);
         }
@@ -235,7 +235,7 @@ __solar_longitude_phi(mpfr_t *x, void *args, int n_args) {
     solar_longitude( &lon, x );
 
     mpfr_sub( lon, lon, phi, GMP_RNDN );
-    __mod( &lon, &lon, &fullangle );
+    dt_astro_mod( &lon, &lon, &fullangle );
 
     if ( mpfr_cmp_ui( lon, 180 ) < 0 ) {
         result = 1;
@@ -281,7 +281,7 @@ solar_longitude_after( mpfr_t *result, mpfr_t *moment, mpfr_t *phi ) {
         solar_longitude( &lon, moment );
         mpfr_init_set( x, *phi, GMP_RNDN );
         mpfr_sub(x, x, lon, GMP_RNDN );
-        __mod( &x, &x, &fullangle );
+        dt_astro_mod( &x, &x, &fullangle );
         mpfr_mul( n, n, x, GMP_RNDN );
 
         mpfr_clear(lon);

@@ -203,10 +203,10 @@ int __search_next(mpfr_t *result, mpfr_t *base,
     int (*next_val)(mpfr_t *next, mpfr_t *x, void *args),
     void *next_args
 );
-int __mod( mpfr_t *result, mpfr_t *target, mpfr_t *base );
-int __sin( mpfr_t *result, mpfr_t *degrees );
-int __cos( mpfr_t *result, mpfr_t *degrees );
-int __polynomial( mpfr_t *result, mpfr_t *x, int howmany, mpfr_t **coefs);
+int dt_astro_mod( mpfr_t *result, mpfr_t *target, mpfr_t *base );
+int dt_astro_sin( mpfr_t *result, mpfr_t *degrees );
+int dt_astro_cos( mpfr_t *result, mpfr_t *degrees );
+int dt_astro_polynomial( mpfr_t *result, mpfr_t *x, int howmany, mpfr_t **coefs);
 int polynomial(mpfr_t *result, mpfr_t *x, int howmany, ...);
 int is_leap_year(int y);
 long gregorian_year_from_rd(long rd);

@@ -62,7 +62,7 @@ mpfr_fprintf(stderr,
 }
 
 int
-__mod( mpfr_t *result, mpfr_t *target, mpfr_t *base ) {
+dt_astro_mod( mpfr_t *result, mpfr_t *target, mpfr_t *base ) {
     mpfr_t p, r;
 
     /* target - floor(target / base) * base */
@@ -79,7 +79,7 @@ __mod( mpfr_t *result, mpfr_t *target, mpfr_t *base ) {
 }
 
 int
-__sin( mpfr_t *result, mpfr_t *degrees ) {
+dt_astro_sin( mpfr_t *result, mpfr_t *degrees ) {
     mpfr_t pi2, r;
 
     mpfr_init(r);
@@ -91,7 +91,7 @@ __sin( mpfr_t *result, mpfr_t *degrees ) {
     mpfr_div_ui(r, r, 360, GMP_RNDN);
     mpfr_mul(r, r, *degrees, GMP_RNDN);
 
-    __mod( &r, &r, &pi2 );
+    dt_astro_mod( &r, &r, &pi2 );
     mpfr_sin( *result, r, GMP_RNDN );
 
     mpfr_clear(r);
@@ -100,7 +100,7 @@ __sin( mpfr_t *result, mpfr_t *degrees ) {
 }
 
 int
-__cos( mpfr_t *result, mpfr_t *degrees ) {
+dt_astro_cos( mpfr_t *result, mpfr_t *degrees ) {
     mpfr_t pi2, r;
 
     mpfr_init(r);
@@ -112,7 +112,7 @@ __cos( mpfr_t *result, mpfr_t *degrees ) {
     mpfr_div_ui(r, r, 360, GMP_RNDN);
     mpfr_mul(r, r, *degrees, GMP_RNDN);
 
-    __mod( &r, &r, &pi2 );
+    dt_astro_mod( &r, &r, &pi2 );
     mpfr_cos( *result, r, GMP_RNDN );
 
     mpfr_clear(r);
@@ -121,7 +121,7 @@ __cos( mpfr_t *result, mpfr_t *degrees ) {
 }
 
 int
-__polynomial( mpfr_t *result, mpfr_t *x, int howmany, mpfr_t **coefs) {
+dt_astro_polynomial( mpfr_t *result, mpfr_t *x, int howmany, mpfr_t **coefs) {
     int i;
     mpfr_t *m;
 
@@ -158,7 +158,7 @@ polynomial(mpfr_t *result, mpfr_t *x, int howmany, ...) {
     }
     va_end(argptr);
 
-    __polynomial( result, x, howmany, coefs);
+    dt_astro_polynomial( result, x, howmany, coefs);
 
     Safefree(coefs);
 
@@ -434,7 +434,7 @@ aberration(mpfr_t *result, mpfr_t *moment) {
     julian_centuries(result, moment);
     mpfr_mul_d( *result, *result, 35999.01848, GMP_RNDN );
     mpfr_add_d( *result, *result, 177.63, GMP_RNDN );
-    __cos( result, result );
+    dt_astro_cos( result, result );
     mpfr_mul_d( *result, *result, 0.000094, GMP_RNDN );
     mpfr_sub_d( *result, *result, 0.0005575, GMP_RNDN );
 
@@ -472,9 +472,9 @@ nutation( mpfr_t *result, mpfr_t *moment ) {
         mpfr_clear(c);
     }
 
-    __sin(&A, &A);
+    dt_astro_sin(&A, &A);
     mpfr_mul_d(A, A, -0.004778, GMP_RNDN);
-    __sin(&B, &B);
+    dt_astro_sin(&B, &B);
     mpfr_mul_d(B, B, -0.0003667, GMP_RNDN);
     mpfr_add(*result, A, B, GMP_RNDN);
     return 1;
