@@ -50,8 +50,9 @@ my @major_term_dates =
 my @minor_term_dates = 
     map { 
         my %args;
-        @args{ qw(year month day hour minute time_zone) } =
-            ( @$_, 0, 'UTC' );
+        @args{ qw(year month day hour minute) } = @$_;
+        $args{minute} ||= 0;
+        $args{time_zone} ||= 'UTC';
         DateTime->new(%args);
     }
     (
