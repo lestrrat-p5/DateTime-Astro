@@ -264,6 +264,10 @@ solar_longitude_before( mpfr_t *result, mpfr_t *moment, mpfr_t *phi ) {
 
     __binary_search( result, &l, &u, __solar_longitude_phi, (void *) phi, 1, __solar_longitude_mu );
 
+    mpfr_clear(tau);
+    mpfr_clear(l);
+    mpfr_clear(u);
+
     return 1;
 }
 

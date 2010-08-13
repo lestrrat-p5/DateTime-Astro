@@ -82,7 +82,6 @@ int
 dt_astro_sin( mpfr_t *result, mpfr_t *degrees ) {
     mpfr_t pi2, r;
 
-    mpfr_init(r);
     mpfr_init(pi2);
     mpfr_const_pi(pi2, GMP_RNDN);
     mpfr_mul_ui(pi2, pi2, 2, GMP_RNDN); /* pi * 2 */
@@ -103,7 +102,6 @@ int
 dt_astro_cos( mpfr_t *result, mpfr_t *degrees ) {
     mpfr_t pi2, r;
 
-    mpfr_init(r);
     mpfr_init(pi2);
     mpfr_const_pi(pi2, GMP_RNDN);
     mpfr_mul_ui(pi2, pi2, 2, GMP_RNDN); /* pi * 2 */
@@ -396,7 +394,7 @@ dynamical_moment(mpfr_t *result, mpfr_t *moment) {
     mpfr_t correction;
     long rd;
     mpfr_init(correction);
-    mpfr_init_set( *result, *moment, GMP_RNDN );
+    mpfr_set( *result, *moment, GMP_RNDN );
 
     rd = mpfr_get_si(*moment, GMP_RNDN);
 
@@ -477,6 +475,10 @@ nutation( mpfr_t *result, mpfr_t *moment ) {
     dt_astro_sin(&B, &B);
     mpfr_mul_d(B, B, -0.0003667, GMP_RNDN);
     mpfr_add(*result, A, B, GMP_RNDN);
+
+    mpfr_clear(A);
+    mpfr_clear(B);
+    mpfr_clear(C);
     return 1;
 }
 

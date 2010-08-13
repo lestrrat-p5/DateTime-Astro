@@ -14,6 +14,7 @@ lunar_longitude( mpfr_t *result, mpfr_t *moment ) {
 
     mpfr_t C, mean_moon, elongation, solar_anomaly, lunar_anomaly, moon_node, E, correction, venus, jupiter, flat_earth, N, fullangle;
 
+    mpfr_init(C);
     julian_centuries( &C, moment );
 
     {
@@ -237,6 +238,20 @@ mpfr_fprintf(stderr, "lunar = mod(%.10RNf) = ", *result );
 mpfr_fprintf(stderr, "%.10RNf\n", *result );
 #endif
 #endif
+
+    mpfr_clear(C);
+    mpfr_clear(mean_moon);
+    mpfr_clear(elongation);
+    mpfr_clear(solar_anomaly);
+    mpfr_clear(lunar_anomaly);
+    mpfr_clear(moon_node);
+    mpfr_clear(E);
+    mpfr_clear(correction);
+    mpfr_clear(venus);
+    mpfr_clear(jupiter);
+    mpfr_clear(flat_earth);
+    mpfr_clear(N);
+    mpfr_clear(fullangle);
     return 1;
 }
 
@@ -307,6 +322,7 @@ mpfr_fprintf(stderr, "sub %.120RNf -> %.120RNf\n", *result, new_moment);
             if (flipped != -1 && flipped != mode) {
                 mpfr_div_d(delta, delta, 1.1, GMP_RNDN);
             }
+            mpfr_clear(new_moment);
         }
         mpfr_clear(delta);
         mpfr_clear(ll);
@@ -502,6 +518,10 @@ mpfr_fprintf(stderr,
             mpfr_mul(l, l, j, GMP_RNDN);
 
             mpfr_add(additional, additional, l, GMP_RNDN);
+
+            mpfr_clear(i);
+            mpfr_clear(j);
+            mpfr_clear(l);
         }
     }
 
@@ -531,9 +551,15 @@ mpfr_fprintf(stderr,
     mpfr_clear(correction);
     mpfr_clear(additional);
 
+    if (dt_astro_global_cache.cache_size == 0) {
+        dt_astro_global_cache.cache_size = 200000;
+        Newxz( dt_astro_global_cache.cache, dt_astro_global_cache.cache_size, mpfr_t * );
+    }
+
     if (dt_astro_global_cache.cache_size < n_int + 1) {
-        Newxz( dt_astro_global_cache.cache, n_int + 1, mpfr_t *);
-        dt_astro_global_cache.cache_size = n_int + 1;
+        int new_size = dt_astro_global_cache.cache_size * 2;
+        Renew( dt_astro_global_cache.cache, new_size, mpfr_t *);
+        dt_astro_global_cache.cache_size = new_size;
     }
 
     {

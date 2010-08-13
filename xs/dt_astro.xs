@@ -52,12 +52,13 @@ DT_Astro_polynomial(x, ...)
             }
 
             dt_astro_polynomial(&RETVAL, &x, items - 1, coefs);
-            for( i = i; i < items; i++ ) {
+            for( i = 1; i < items; i++ ) {
                 mpfr_clear( *coefs[i - 1] );
-                Safefree(*coefs[i - 1]);
+                Safefree( coefs[i - 1] );
             }
             Safefree(coefs);
         }
+        mpfr_clear(x);
     OUTPUT:
         RETVAL
 
