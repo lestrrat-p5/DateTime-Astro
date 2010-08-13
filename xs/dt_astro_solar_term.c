@@ -35,6 +35,8 @@ major_term_after( mpfr_t *result, mpfr_t *moment ) {
     next_term_at( result, moment, &l);
 
     mpfr_clear(l);
+    mpfr_clear( fullangle );
+    mpfr_clear( midnight );
     return 1;
 }
 
@@ -61,6 +63,8 @@ major_term_before( mpfr_t *result, mpfr_t *moment ) {
     prev_term_at( result, moment, &l);
 
     mpfr_clear(l);
+    mpfr_clear( fullangle );
+    mpfr_clear( midnight );
     return 1;
 }
 
@@ -86,6 +90,8 @@ minor_term_after( mpfr_t *result, mpfr_t *moment ) {
     next_term_at( result, moment, &l );
 
     mpfr_clear(l);
+    mpfr_clear( fullangle );
+    mpfr_clear( midnight );
     return 1;
 }
 
@@ -110,6 +116,8 @@ minor_term_before( mpfr_t *result, mpfr_t *moment ) {
     prev_term_at( result, moment, &l );
 
     mpfr_clear( l );
+    mpfr_clear( fullangle );
+    mpfr_clear( midnight );
     return 1;
 }
 
