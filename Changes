@@ -1,10 +1,11 @@
 Changes
 =======
 
-0.99999_01
-    * Rewritten from scratch using MPFR
-    * DateTime::Util::Astro will host ALL astro-related calculations
-      so you only need to link to MPFR once :)
+0.99999_01 19 Aug 2010
+    * Renamed from DateTime::Util::Astro to DateTime::Astro
+    * Rewritten from scratch using MPFR. DateTime::Astro will host 
+      ALL astro-related calculations so you only need to link to MPFR once :)
+    * Moved repository to github
 
 0.12000 - Tue 04 Nov 2007 [rev 3804]
   - Fix ephemeris_correction. The Calculations for middle ages were
