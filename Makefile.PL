@@ -6,6 +6,7 @@ all_from 'lib/DateTime/Astro.pm';
 use_ppport;
 requires 'DateTime';
 requires 'DateTime::Set';
+requires 'Exporter' => '5.57';
 cc_warnings;
 cc_libs 'mpfr';
 cc_src_paths 'xs';

@@ -32,10 +32,13 @@ BEGIN {
         solar_longitude_after
         solar_longitude_after_from_moment
     );
-    our $VERSION = '0.19999';
+    our $VERSION = '0.99999';
 
     my $backend = 'XS';
-    my $explicit_xs = 0;
+
+    # XXX forcibly set explicit_xs so that PP won't be loaded unless
+    # explicitly called
+    my $explicit_xs = 1;
     if (exists $ENV{PERL_DATETIME_ASTRO_BACKEND} && 
         $ENV{PERL_DATETIME_ASTRO_BACKEND} eq 'XS') {
         $explicit_xs = 1;
@@ -90,9 +93,24 @@ DateTime::Astro - Functions For Astromical Calendars
 
 =head1 DESCRIPTION
 
-DateTime::Astro implements functions used in astronomical calendars.
+DateTime::Astro implements functions used in astronomical calendars, such
+as calculation of lunar longitudea and solar longitude.
 
 This module is best used in environments where a C compiler and the MPFR arbitrary precision math library is installed. It can fallback to using Math::BigInt, but that would pretty much render it useless because of its speed and loss of accuracy that may creep up while doing Perl to C struct conversions.
+
+=head1 DISCLAIMER
+
+This module works, but there are several caveats you should be aware of:
+
+=head2 MPFR Is Required / PurePerl Version Not Functional
+
+There /is/ a HALF BAKED Pure Perl implmentation bundled with this distribution, but at this point please consider it UNUSABLE. This sort of calculation requires the speed and efficiency of a C library anyway.
+
+As such, you HAVE to have MPFR installed correctly in your system. Please consult your local package manager, or http://mpfr.org
+
+=head2 Documentation Missing
+
+Yes, I know.
 
 =head1 FUNCTIONS
 
@@ -179,5 +197,27 @@ Returns the Sun's longitude on the given date $dt
 =head2 solar_longitude_from_moment($moment)
 
 Returns the Sun's longitude on the given moment $moment
+
+=head2 new_moon_after_from_moment
+
+=head2 new_moon_before_from_moment
+
+=head2 solar_longitude_after
+
+=head2 solar_longitude_after_from_moment
+
+=head2 solar_longitude_before
+
+=head2 solar_longitude_before_from_moment
+
+=head1 CONSTANTS
+
+=head2 MEAN_SYNODIC_MONTH
+
+Mean time (in moment) between new moons
+
+=head2 MEAN_TROPICAL_YEAR
+
+Mean time (in moment) between a full year (time for the Earth to go around the sun)
 
 =cut
