@@ -220,4 +220,14 @@ Mean time (in moment) between new moons
 
 Mean time (in moment) between a full year (time for the Earth to go around the sun)
 
+=head1 LICENSE
+
+This library is available under Artistic License v2, and is:
+
+    Copyright (C) 2010  Daisuke Maki C<< <daisuke@endeworks.jp> >>
+
+=head1 AUTHOR
+
+Daisuke Maki C<< <daisuke@endeworks.jp> >>
+
 =cut

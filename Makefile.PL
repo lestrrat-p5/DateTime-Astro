@@ -2,6 +2,7 @@ use inc::Module::Install;
 
 name 'DateTime-Astro';
 all_from 'lib/DateTime/Astro.pm';
+license 'artistic_2';
 
 use_ppport;
 requires 'DateTime';
