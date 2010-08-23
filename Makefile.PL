@@ -7,6 +7,8 @@ use_ppport;
 requires 'DateTime';
 requires 'DateTime::Set';
 requires 'Exporter' => '5.57';
+
+cc_assert_lib 'mpfr';
 cc_warnings;
 cc_libs 'mpfr';
 cc_src_paths 'xs';
