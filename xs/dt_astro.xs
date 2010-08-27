@@ -78,6 +78,8 @@ DT_Astro_dt_from_moment(moment)
             mXPUSHi(minute);
             mXPUSHp("second", 6);
             mXPUSHi(secs);
+            mXPUSHp("time_zone", 9);
+            mXPUSHp("UTC", 3);
             PUTBACK;
 
             call_pv("DateTime::new", G_SCALAR);
