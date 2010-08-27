@@ -2,20 +2,6 @@ package DateTime::Astro;
 use strict;
 use Carp 'confess';
 
-sub dt_from_moment {
-    confess "Invalid argument to dt_from_moment called: '$_[0]'"
-        unless $_[0] =~ /^-?\d+(?:\.\d+)?$/;
-    my ($y, $m, $d, $seconds) = ymd_seconds_from_moment($_[0]);
-    my $dt = DateTime->new(
-        time_zone => 'UTC',
-        year => $y,
-        month => $m,
-        day => $d,
-    );
-    $dt->add(seconds => $seconds);
-    return $dt;
-}
-
 sub dynamical_moment_from_dt {
     return dynamical_moment( moment( $_[0] ) );
 }

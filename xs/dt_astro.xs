@@ -30,10 +30,67 @@ PROTOTYPES: DISABLE
 
 void
 DT_Astro__init_global_cache()
-    
 
 void
 DT_Astro__clear_global_cache()
+
+SV *
+DT_Astro_dt_from_moment(moment)
+        NV moment;
+    PREINIT:
+        long rd;
+        long y;
+        int m;
+        int d;
+        long secs;
+        int hour;
+        int minute;
+    CODE:
+        /* We can treat the moment as a simple numeric value, cause
+         * calculating ymd is a simple integer arithmatic, and
+         * for hms we don't need accuracy over 5 digits after the decimal
+         * point
+         */
+        rd = floor(moment);
+        gregorian_components_from_rd( rd, &y, &m, &d );
+
+        secs = (moment - rd) * 86400;
+        hour = floor(secs / 3600);
+        minute = floor( (secs - hour * 3600) / 60 );
+        secs = secs - (hour * 3600 + minute * 60);
+
+        {
+            dSP;
+            ENTER;
+            SAVETMPS;
+            PUSHMARK(SP);
+
+            mXPUSHp("DateTime", 8);
+            mXPUSHp("year", 4);
+            mXPUSHi(y);
+            mXPUSHp("month", 5);
+            mXPUSHi(m);
+            mXPUSHp("day", 3);
+            mXPUSHi(d);
+            mXPUSHp("hour", 4);
+            mXPUSHi(hour);
+            mXPUSHp("minute", 6);
+            mXPUSHi(minute);
+            mXPUSHp("second", 6);
+            mXPUSHi(secs);
+            PUTBACK;
+
+            call_pv("DateTime::new", G_SCALAR);
+            SPAGAIN;
+
+            RETVAL = newSVsv( POPs );
+
+            PUTBACK;
+            FREETMPS;
+            LEAVE;
+        }
+    OUTPUT:
+        RETVAL
 
 mpfr_t
 DT_Astro_polynomial(x, ...)
