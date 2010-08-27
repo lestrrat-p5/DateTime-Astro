@@ -108,9 +108,7 @@ There /is/ a HALF BAKED Pure Perl implmentation bundled with this distribution, 
 
 As such, you HAVE to have MPFR installed correctly in your system. Please consult your local package manager, or http://mpfr.org
 
-=head2 Documentation Missing
-
-Yes, I know.
+Patches to make the pure perl version work better is always welcome.
 
 =head1 FUNCTIONS
 

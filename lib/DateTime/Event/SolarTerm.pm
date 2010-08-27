@@ -200,3 +200,15 @@ sub no_major_term_on {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+DateTime::Event::SolarTerm - Solar Terms
+
+=head1 SYNOPSIS
+
+    use DateTime::Event::SolarTerm;
+
+=cut
