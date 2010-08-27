@@ -1,6 +1,14 @@
 Changes
 =======
 
+0.99999_02 27 Aug 2010
+    * Fixed the adjustment on new moons so that it's done in one step
+      instead of looping by adjusting fixed amounts. This caused a
+      significant slow down when calculating new moons that fell in the
+      range of year >= 2020. Reported by nekokak.
+    * Micro optimize by moving dt_from_moment() to XS.
+    * Doc Tweaks
+
 0.99999_01 19 Aug 2010
     * Renamed from DateTime::Util::Astro to DateTime::Astro
     * Rewritten from scratch using MPFR. DateTime::Astro will host 
