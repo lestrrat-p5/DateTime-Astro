@@ -5,7 +5,7 @@ use constant MAX_DELTA_MINUTES => 180;
 use constant NUM_SAMPLE => 6;
 
 use_ok "DateTime::Astro", qw(solar_longitude);
-use_ok "DateTime::Event::SolarTerm", qw(major_term minor_term);
+use_ok "DateTime::Event::SolarTerm", qw(major_term minor_term major_term_after minor_term_after); 
 
 # XXX - make sure to include dates in wide range
 my @major_term_dates = 
@@ -147,5 +147,30 @@ sub check_deltas
 
 do_major_terms();
 do_minor_terms();
+
+{ # nekokak's tests
+    my %major = (
+        '2010' => ['2010-01-21','2010-02-20','2010-03-23','2010-04-22','2010-05-23','2010-06-22','2010-07-23','2010-08-22','2010-09-22','2010-10-22','2010-11-21','2010-12-22'],
+    );
+
+    my %minor = (
+        '2010' => ['2010-01-06','2010-02-05','2010-03-08','2010-04-07','2010-05-08','2010-06-07','2010-07-07','2010-08-07','2010-09-06','2010-10-07','2010-11-06','2010-12-07'],
+    );
+
+    for my $y (qw/2010/) {
+        my $dt = DateTime->new(year => $y, month => 1, day => 1, time_zone => 'Asia/Tokyo');
+        for my $i (0..11) {
+            my $major_dt = major_term_after($dt);
+            $major_dt->set_time_zone('Asia/Tokyo');
+            is $major_dt->ymd, $major{$y}->[$i], "Got $major_dt, expected $major{$y}->[$i]";
+
+            my $minor_dt = minor_term_after($dt);
+            $minor_dt->set_time_zone('Asia/Tokyo');
+            is $minor_dt->ymd, $minor{$y}->[$i], "Got $minor_dt, expected $minor{$y}->[$i]"; 
+
+            $dt = $major_dt->add(days => 1);
+        }
+    }
+}
 
 done_testing();
