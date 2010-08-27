@@ -345,8 +345,6 @@ mpfr_fprintf(stderr, "sub %.120RNf -> %.120RNf\n", *result, new_moment);
 int
 nth_new_moon( mpfr_t *result, int n_int ) {
     mpfr_t n, k, C, approx, E, solar_anomaly, lunar_anomaly, moon_argument, omega, extra, correction, additional;
-    struct timeval tp;
-    double start, end;
 
 #if(0)
 PerlIO_printf(PerlIO_stderr(), "nth_new_moon = %d\n", n_int );
