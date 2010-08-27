@@ -205,10 +205,98 @@ __END__
 
 =head1 NAME
 
-DateTime::Event::SolarTerm - Solar Terms
+DateTime::Event::SolarTerm - Calculate Solar Terms
 
 =head1 SYNOPSIS
 
     use DateTime::Event::SolarTerm;
+
+=head1 FUNCTIONS
+
+=head2 major_term_after
+
+=head2 major_term_before
+
+=head2 major_term
+
+=head2 minor_term_after
+
+=head2 minor_term_before
+
+=head2 minor_term
+
+=head2 no_major_term_on
+
+=head2 prev_term_at
+
+=head2 last_major_term_index
+
+=head2 last_major_term_index_from_moment
+
+=head2 last_minor_term_index
+
+=head2 major_term_after_from_moment
+
+=head2 major_term_before_from_moment
+
+=head2 minor_term_after_from_moment
+
+=head2 minor_term_before_from_moment
+
+=head2 next_term_at_from_moment
+
+=head2 no_major_term_on_from_moment
+
+=head2 prev_term_at_from_moment
+
+=head1 THE TERMS
+
+=head2 CHUNFEN SHUNBUN
+
+=head2 QINGMING SEIMEI
+
+=head2 GUYU KOKUU
+
+=head2 LIXIA RIKKA
+
+=head2 XIAOMAN SHOMAN
+
+=head2 MANGZHONG BOHSHU
+
+=head2 XIAZHO GESHI SUMMER_SOLSTICE
+
+=head2 XIAOSHU SHOUSHO
+
+=head2 DASHU TAISHO
+
+=head2 LIQIU RISSHU
+
+=head2 CHUSHU SHOSHO
+
+=head2 BAILU HAKURO
+
+=head2 QIUFEN SHUUBUN
+
+=head2 HANLU KANRO
+
+=head2 SHUANGJIANG SOHKOH
+
+=head2 LIDONG RITTOH
+
+=head2 XIAOXUE SHOHSETSU
+
+=head2 DAXUE TAISETSU
+
+=head2 DONGZHI TOHJI WINTER_SOLSTICE
+
+=head2 XIAOHAN SHOHKAN
+
+=head2 DAHAN DAIKAN
+
+=head2 LICHUN RISSHUN
+
+=head2 YUSHUI USUI
+
+=head2 JINGZE KEICHITSU
 
 =cut
