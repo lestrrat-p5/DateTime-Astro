@@ -338,20 +338,17 @@ EC5(mpfr_t *correction, int year) {
 }
 
 static int
-EC_X(mpfr_t *result, int y) {
-    mpfr_set_d(
-        *result,
-        fixed_from_ymd(y, 1, 1) - RD_MOMENT_1810_JAN_1,
-        GMP_RNDN
-    );
-    return 1;
-}
-
-static int
 EC6(mpfr_t *correction, int year) {
     mpfr_t x;
-    mpfr_init(x);
-    EC_X( &x, year );
+
+    { /* used to be called EC_X... now inlined */
+        mpfr_init(x);
+        mpfr_set_d(
+            x,
+            fixed_from_ymd(year, 1, 1) - RD_MOMENT_1810_JAN_1,
+            GMP_RNDN
+        );
+    }
 
     mpfr_pow_ui( *correction, x, 2, GMP_RNDN );
     mpfr_div_ui( *correction, *correction, 41048480, GMP_RNDN );

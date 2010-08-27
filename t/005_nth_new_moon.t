@@ -29,12 +29,12 @@ foreach my $data (@data) {
         ok $delta < $DELTA_LONGITUDE, "$n-th new moon [lunar = $lunar_longitude][solar = $solar_longitude][delta = $delta] (allowed delta = $DELTA_LONGITUDE)";
         my $dt = dt_from_moment( $moment );
 
-        is $dt->year,  $y, "[year = " . $dt->year . "] ($y)";
-        is $dt->month, $m, "[month = " . $dt->month . "] ($m)";
-        is $dt->day,   $d, "[day = " . $dt->day . "] ($d)";
-        is $dt->hour,  $H, "[hour = " . $dt->hour . "] ($H)";
+        is $dt->year,  $y, "[year = " . $dt->year . "] ($y) $dt";
+        is $dt->month, $m, "[month = " . $dt->month . "] ($m) $dt";
+        is $dt->day,   $d, "[day = " . $dt->day . "] ($d) $dt";
+        is $dt->hour,  $H, "[hour = " . $dt->hour . "] ($H) $dt";
 
-        ok abs($dt->minute - $M) <= 1, "[minute = " . $dt->minute . "] ($M)";
+        ok abs($dt->minute - $M) <= 1, "[minute = " . $dt->minute . "] ($M) $dt";
 
         my $lunar_phase = lunar_phase($dt);
         $delta = ($lunar_phase > 180) ? 360 - $lunar_phase : $lunar_phase;
@@ -52,9 +52,9 @@ __DATA__
 21016 1700  3 20 16 46
 21017 1700  4 19  6 51
 21018 1700  5 18 17 45
-21019 1700  6 17  2 16
-21020 1700  7 16  9 34
-21021 1700  8 14 16 47
+21019 1700  6 17  2 14
+21020 1700  7 16  9 32
+21021 1700  8 14 16 45
 21022 1700  9 13  0 47
 21023 1700 10 12 10 15
 21024 1700 11 10 21 44

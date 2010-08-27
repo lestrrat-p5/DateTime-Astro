@@ -1,6 +1,7 @@
 #ifndef __DT_ASTRO_LUNAR_C__
 #define __DT_ASTRO_LUNAR_C__
 #include "dt_astro.h"
+#define NV_1E6 1000000.0
 
 extern 
 struct DT_ASTRO_GLOBAL_CACHE {
@@ -278,59 +279,74 @@ adjust_lunar_phase_to_zero(mpfr_t *result) {
     mpfr_t ll, delta;
     int mode = -1;
     int loop = 1;
-    /* Adjust values so that it's as close as possible to 0 degrees */
+    int count = 0;
+    /* Adjust values so that it's as close as possible to 0 degrees.
+     * if we have a delta of 1 degree, then we're about
+     *  1 / ( 360 / MEAN_SYNODIC_MONTH )
+     * days apart
+     */
 
     mpfr_init(ll);
     mpfr_init_set_d(delta, 0.0001, GMP_RNDN);
-        
+
     while (loop) {
         int flipped = mode;
         mpfr_t new_moment;
+        count++;
         mpfr_init(new_moment);
         lunar_phase(&ll, result);
 #if (TRACE)
 mpfr_fprintf(stderr,
     "Adjusting ll from (%.30RNf) moment is %.5RNf delta is %.30RNf\n", ll, *result, delta);
 #endif
-            if (mpfr_cmp_ui( ll, 180 ) > 0) {
-                mode = 1;
-                mpfr_add( new_moment, *result, delta, GMP_RNDN );
+        /* longitude was greater than 180, so we're looking to add a few
+         * degrees to make it close to 360 ( 0 )
+         */
+        if (mpfr_cmp_ui( ll, 180 ) > 0) {
+            mode = 1;
+            mpfr_sub_ui(delta, ll, 360, GMP_RNDN);
+            mpfr_div_d(delta, delta, 360 / MEAN_SYNODIC_MONTH, GMP_RNDN);
+            mpfr_add( new_moment, *result, delta, GMP_RNDN );
 #if (TRACE)
 mpfr_fprintf(stderr, "add %.30RNf -> %.30RNf\n", *result, new_moment);
 #endif
-                mpfr_set(*result, new_moment, GMP_RNDN);
-                if (mpfr_cmp(new_moment, *result) == 0) {
-                    loop = 0;
-                }
-            } else if (mpfr_cmp_ui( ll, 180 ) < 0 ) {
-                if ( mpfr_cmp_d( ll, 0.000000000000000000001 ) < 0) {
-                    loop = 0;
-                } else {
-                    mode = 0;
-                    mpfr_sub( new_moment, *result, delta, GMP_RNDN );
+            mpfr_set(*result, new_moment, GMP_RNDN);
+            if (mpfr_cmp(new_moment, *result) == 0) {
+                loop = 0;
+            }
+        } else if (mpfr_cmp_ui( ll, 180 ) < 0 ) {
+            if ( mpfr_cmp_d( ll, 0.000000000000000000001 ) < 0) {
+                loop = 0;
+            } else {
+                mode = 0;
+                mpfr_sub_ui(delta, ll, 0, GMP_RNDN);
+                mpfr_div_d(delta, delta, 360 / MEAN_SYNODIC_MONTH, GMP_RNDN);
+                mpfr_sub( new_moment, *result, delta, GMP_RNDN );
 #if (TRACE)
 mpfr_fprintf(stderr, "sub %.120RNf -> %.120RNf\n", *result, new_moment);
 #endif
-                    if (mpfr_cmp(new_moment, *result) == 0) {
-                        loop = 0;
-                    }
-                    mpfr_set(*result, new_moment, GMP_RNDN);
+                if (mpfr_cmp(new_moment, *result) == 0) {
+                    loop = 0;
                 }
-            } else {
-                loop = 0;
+                mpfr_set(*result, new_moment, GMP_RNDN);
             }
-            if (flipped != -1 && flipped != mode) {
-                mpfr_div_d(delta, delta, 1.1, GMP_RNDN);
-            }
-            mpfr_clear(new_moment);
+        } else {
+            loop = 0;
         }
-        mpfr_clear(delta);
-        mpfr_clear(ll);
+        if (flipped != -1 && flipped != mode) {
+            mpfr_div_d(delta, delta, 1.1, GMP_RNDN);
+        }
+        mpfr_clear(new_moment);
     }
+    mpfr_clear(delta);
+    mpfr_clear(ll);
+}
 
 int
 nth_new_moon( mpfr_t *result, int n_int ) {
     mpfr_t n, k, C, approx, E, solar_anomaly, lunar_anomaly, moon_argument, omega, extra, correction, additional;
+    struct timeval tp;
+    double start, end;
 
 #if(0)
 PerlIO_printf(PerlIO_stderr(), "nth_new_moon = %d\n", n_int );
@@ -551,6 +567,7 @@ mpfr_fprintf(stderr,
     mpfr_clear(correction);
     mpfr_clear(additional);
 
+
     if (dt_astro_global_cache.cache_size == 0) {
         dt_astro_global_cache.cache_size = 200000;
         Newxz( dt_astro_global_cache.cache, dt_astro_global_cache.cache_size, mpfr_t * );
@@ -648,8 +665,8 @@ new_moon_after_from_moment(mpfr_t *result, mpfr_t *o_moment) {
     nth_new_moon(&t0, 0);
 
     mpfr_init(phi);
-    lunar_phase( &phi, o_moment );
 
+    lunar_phase( &phi, o_moment );
 
     mpfr_init_set(delta, *o_moment, GMP_RNDN);
     mpfr_sub(delta, delta, t0, GMP_RNDN);
@@ -687,11 +704,13 @@ mpfr_fprintf(stderr,
            the calculation, so we make that exception, and make sure
            to think of those two as the same
         */
-        int cmp_result;
+        int loop_count = 0;
+        int cmp_result = -1;
         mpfr_t delta;
-
         mpfr_init(delta);
-        do {
+
+        while (cmp_result <= 0) {
+            loop_count++;
             cmp_result = mpfr_cmp( *result, *o_moment );
             if (cmp_result > 0) {
                 mpfr_dim(delta, *result, *o_moment, GMP_RNDN);
@@ -704,7 +723,7 @@ mpfr_fprintf(stderr,
                 n = n + 1;
                 nth_new_moon( result, n );
             }
-        } while (cmp_result <= 0);
+        }
         mpfr_clear(delta);
     }
 
