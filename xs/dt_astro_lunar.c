@@ -471,7 +471,7 @@ mpfr_fprintf(stderr,
         mpfr_init_set_d(a, 299.77, GMP_RNDN);
         mpfr_init_set_d(b, 132.8475848, GMP_RNDN);
         mpfr_init_set_d(c, -0.009173, GMP_RNDN);
-        polynomial(&extra, &c, 3, &a, &b, &c);
+        polynomial(&extra, &C, 3, &a, &b, &c);
         dt_astro_sin(&extra, &extra);
         mpfr_mul_d(extra, extra, 0.000325, GMP_RNDN);
         mpfr_clear(a);
