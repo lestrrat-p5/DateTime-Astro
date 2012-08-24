@@ -10,6 +10,7 @@ requires 'DateTime::Set';
 requires 'Exporter' => '5.57';
 
 # cc_assert_lib lib => 'mpfr';
+use_xshelper;
 cc_warnings;
 cc_libs 'mpfr';
 cc_src_paths 'xs';

@@ -5,13 +5,20 @@ struct DT_ASTRO_GLOBAL_CACHE {
     mpfr_t **cache;
 } dt_astro_global_cache;
 
-static void
+#include "dt_astro_common.inc"
+#include "dt_astro_solar.inc"
+#include "dt_astro_lunar.inc"
+#include "dt_astro_solar_term.inc"
+
+STATIC_INLINE
+void
 DT_Astro__init_global_cache() {
     dt_astro_global_cache.cache_size = 0;
     dt_astro_global_cache.cache = NULL;
 }
 
-static void
+STATIC_INLINE
+void
 DT_Astro__clear_global_cache() {
     int i;
     for(i = 0; i < dt_astro_global_cache.cache_size; i++ ) {

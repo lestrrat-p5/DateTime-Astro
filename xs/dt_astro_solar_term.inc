@@ -2,16 +2,19 @@
 #define __DT_ASTRO_SOLAR_TERM_C__
 #include "dt_astro.h"
 
+STATIC_INLINE
 int
 next_term_at( mpfr_t *result, mpfr_t *moment, mpfr_t *phi ) {
     return solar_longitude_after( result, moment, phi );
 }
 
+STATIC_INLINE
 int
 prev_term_at( mpfr_t *result, mpfr_t *moment, mpfr_t *phi ) {
     return estimate_prior_solar_longitude( result, moment, phi );
 }
 
+STATIC_INLINE
 int
 major_term_after( mpfr_t *result, mpfr_t *moment ) {
     mpfr_t x, lon, l, midnight, fullangle;
@@ -40,6 +43,7 @@ major_term_after( mpfr_t *result, mpfr_t *moment ) {
     return 1;
 }
 
+STATIC_INLINE
 int
 major_term_before( mpfr_t *result, mpfr_t *moment ) {
     mpfr_t x, lon, l, midnight, fullangle;
@@ -68,6 +72,7 @@ major_term_before( mpfr_t *result, mpfr_t *moment ) {
     return 1;
 }
 
+STATIC_INLINE
 int
 minor_term_after( mpfr_t *result, mpfr_t *moment ) {
     mpfr_t l, fullangle, lon, midnight;
@@ -95,6 +100,7 @@ minor_term_after( mpfr_t *result, mpfr_t *moment ) {
     return 1;
 }
 
+STATIC_INLINE
 int
 minor_term_before( mpfr_t *result, mpfr_t *moment ) {
     mpfr_t l, fullangle, lon, midnight;

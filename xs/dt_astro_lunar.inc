@@ -3,13 +3,7 @@
 #include "dt_astro.h"
 #define NV_1E6 1000000.0
 
-extern 
-struct DT_ASTRO_GLOBAL_CACHE {
-    int cache_size;
-    mpfr_t **cache;
-} dt_astro_global_cache;
-
-
+STATIC_INLINE
 int
 lunar_longitude( mpfr_t *result, mpfr_t *moment ) {
 
@@ -256,6 +250,7 @@ mpfr_fprintf(stderr, "%.10RNf\n", *result );
     return 1;
 }
 
+STATIC_INLINE
 int
 lunar_phase( mpfr_t *result, mpfr_t *moment ) {
     mpfr_t sl, ll, fullangle;
@@ -274,7 +269,8 @@ lunar_phase( mpfr_t *result, mpfr_t *moment ) {
     return 1;
 }
 
-static inline void
+STATIC_INLINE
+void
 adjust_lunar_phase_to_zero(mpfr_t *result) {
     mpfr_t ll, delta;
     int mode = -1;
@@ -342,6 +338,7 @@ mpfr_fprintf(stderr, "sub %.120RNf -> %.120RNf\n", *result, new_moment);
     mpfr_clear(ll);
 }
 
+STATIC_INLINE
 int
 nth_new_moon( mpfr_t *result, int n_int ) {
     mpfr_t n, k, C, approx, E, solar_anomaly, lunar_anomaly, moon_argument, omega, extra, correction, additional;
@@ -594,6 +591,7 @@ mpfr_fprintf(stderr,
 /* TODO: Check out errata 269 on 
     http://emr.cs.uiuc.edu/home/reingold/calendar-book/second-edition/errata.pdf
 */
+STATIC_INLINE
 int
 new_moon_before_from_moment(mpfr_t *result, mpfr_t *o_moment) {
     mpfr_t t0, phi, big_n, radian, delta;
@@ -653,6 +651,7 @@ new_moon_before_from_moment(mpfr_t *result, mpfr_t *o_moment) {
     return 1;
 }
 
+STATIC_INLINE
 int
 new_moon_after_from_moment(mpfr_t *result, mpfr_t *o_moment) {
     mpfr_t t0, phi, big_n, radian, delta;

@@ -7,6 +7,7 @@
 #define NEED_sv_2pv_flags
 #include "ppport.h"
 #include "mpfr.h"
+#include "xshelper.h"
 
 #define TRACE 0
 #define SV_TO_MPFR mpfr_t
@@ -190,53 +191,6 @@ static const double NTH_NEW_MOON_ADDITIONAL_ARGS[13][3] = {
     { 291.34,  1.844379, 0.000040 },
     { 239.56, 25.513099, 0.000035 }
 };
-
-int __binary_search(mpfr_t *result, mpfr_t *lo, mpfr_t *hi, 
-    int (*phi)(mpfr_t *, void *args, int n_args),
-    void *args,
-    int n_args,
-    int (*mu)(mpfr_t *, mpfr_t *)
-);
-
-int __search_next(mpfr_t *result, mpfr_t *base, 
-    int (*check)(mpfr_t *x, void *args),
-    void *check_args,
-    int (*next_val)(mpfr_t *next, mpfr_t *x, void *args),
-    void *next_args
-);
-int dt_astro_mod( mpfr_t *result, mpfr_t *target, mpfr_t *base );
-int dt_astro_sin( mpfr_t *result, mpfr_t *degrees );
-int dt_astro_cos( mpfr_t *result, mpfr_t *degrees );
-int dt_astro_polynomial( mpfr_t *result, mpfr_t *x, int howmany, mpfr_t **coefs);
-int polynomial(mpfr_t *result, mpfr_t *x, int howmany, ...);
-int is_leap_year(int y);
-long gregorian_year_from_rd(long rd);
-int fixed_from_ymd(int y, int m, int d);
-int gregorian_components_from_rd(long rd, long *y, int *m, int *d);
-int ymd_seconds_from_moment(mpfr_t *moment, long *y, int *m, int *d, int *s);
-int ephemeris_correction(mpfr_t *correction, int y);
-int dynamical_moment(mpfr_t *result, mpfr_t *moment);
-int julian_centuries(mpfr_t *result, mpfr_t *moment);
-int aberration(mpfr_t *result, mpfr_t *moment);
-int nutation( mpfr_t *result, mpfr_t *moment );
-
-int solar_longitude( mpfr_t *result, mpfr_t *moment );
-int solar_longitude_before( mpfr_t *result, mpfr_t *moment, mpfr_t *phi );
-int solar_longitude_after( mpfr_t *result, mpfr_t *moment, mpfr_t *phi );
-int estimate_prior_solar_longitude(mpfr_t *result, mpfr_t *moment, mpfr_t *phi);
-
-int lunar_longitude( mpfr_t *result, mpfr_t *moment );
-int lunar_phase( mpfr_t *result, mpfr_t *moment );
-int nth_new_moon( mpfr_t *result, int n_int );
-int new_moon_after_from_moment(mpfr_t *result, mpfr_t *o_moment);
-int new_moon_before_from_moment(mpfr_t *result, mpfr_t *o_moment);
-
-int next_term_at( mpfr_t *result, mpfr_t *moment, mpfr_t *phi );
-int prev_term_at( mpfr_t *result, mpfr_t *moment, mpfr_t *phi );
-int major_term_after( mpfr_t *result, mpfr_t *moment );
-int major_term_before( mpfr_t *result, mpfr_t *moment );
-int minor_term_after( mpfr_t *result, mpfr_t *moment );
-int minor_term_before( mpfr_t *result, mpfr_t *moment );
 
 #endif
 

@@ -59,7 +59,7 @@ static const double SOLAR_LONGITUDE_ARGS[59][3] = {
     {     10,  85.90000,  12297.5360000 }
 };
 
-
+STATIC_INLINE
 int
 solar_longitude( mpfr_t *result, mpfr_t *moment ) {
     mpfr_t C, fugly, A, N, longitude, fullangle;
@@ -148,6 +148,7 @@ mpfr_fprintf(stderr, "%.10RNf\n", *result );
     return 1;
 }
 
+STATIC_INLINE
 int
 estimate_prior_solar_longitude(mpfr_t *result, mpfr_t *moment, mpfr_t *phi) {
     mpfr_t tau, delta;
@@ -203,9 +204,10 @@ estimate_prior_solar_longitude(mpfr_t *result, mpfr_t *moment, mpfr_t *phi) {
     return 1;
 }
 
-#define SOLAR_LONGITUDE_ALLOWED_DELTA 0.0000000001
+#define SOLAR_LONGITUDE_ALLOWED_DELTA 0.00000000000000000000000000000001
 
-static int
+STATIC_INLINE
+int
 __solar_longitude_mu(mpfr_t *lo, mpfr_t *hi) {
     int result = 0;
     mpfr_t delta;
@@ -220,7 +222,8 @@ __solar_longitude_mu(mpfr_t *lo, mpfr_t *hi) {
     return result;
 }
 
-static int
+STATIC_INLINE
+int
 __solar_longitude_phi(mpfr_t *x, void *args, int n_args) {
     int result = 0;
     mpfr_t phi, lon, fullangle;
@@ -247,6 +250,7 @@ __solar_longitude_phi(mpfr_t *x, void *args, int n_args) {
     return result;
 }
 
+STATIC_INLINE
 int
 solar_longitude_before( mpfr_t *result, mpfr_t *moment, mpfr_t *phi ) {
     mpfr_t tau, l, u;
@@ -271,6 +275,7 @@ solar_longitude_before( mpfr_t *result, mpfr_t *moment, mpfr_t *phi ) {
     return 1;
 }
 
+STATIC_INLINE
 int
 solar_longitude_after( mpfr_t *result, mpfr_t *moment, mpfr_t *phi ) {
     mpfr_t tau, n, l, u;

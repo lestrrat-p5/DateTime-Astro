@@ -2,6 +2,7 @@
 #define __DT_ASTRO_COMMON_C__
 #include "dt_astro.h"
 
+STATIC_INLINE
 int
 __binary_search(mpfr_t *result, mpfr_t *lo, mpfr_t *hi, 
     int (*phi)(mpfr_t *, void *args, int n_args),
@@ -30,6 +31,7 @@ __binary_search(mpfr_t *result, mpfr_t *lo, mpfr_t *hi,
     return 1;
 }
 
+STATIC_INLINE
 int
 __search_next(mpfr_t *result, mpfr_t *base, 
     int (*check)(mpfr_t *x, void *args),
@@ -61,6 +63,7 @@ mpfr_fprintf(stderr,
     return 1;
 }
 
+STATIC_INLINE
 int
 dt_astro_mod( mpfr_t *result, mpfr_t *target, mpfr_t *base ) {
     mpfr_t p, r;
@@ -78,6 +81,7 @@ dt_astro_mod( mpfr_t *result, mpfr_t *target, mpfr_t *base ) {
     return 1;
 }
 
+STATIC_INLINE
 int
 dt_astro_sin( mpfr_t *result, mpfr_t *degrees ) {
     mpfr_t pi2, r;
@@ -98,6 +102,7 @@ dt_astro_sin( mpfr_t *result, mpfr_t *degrees ) {
     return 1;
 }
 
+STATIC_INLINE
 int
 dt_astro_cos( mpfr_t *result, mpfr_t *degrees ) {
     mpfr_t pi2, r;
@@ -118,6 +123,7 @@ dt_astro_cos( mpfr_t *result, mpfr_t *degrees ) {
     return 1;
 }
 
+STATIC_INLINE
 int
 dt_astro_polynomial( mpfr_t *result, mpfr_t *x, int howmany, mpfr_t **coefs) {
     int i;
@@ -141,6 +147,7 @@ dt_astro_polynomial( mpfr_t *result, mpfr_t *x, int howmany, mpfr_t **coefs) {
     return 1;
 }
 
+STATIC_INLINE
 int
 polynomial(mpfr_t *result, mpfr_t *x, int howmany, ...) {
     va_list argptr;
@@ -163,7 +170,7 @@ polynomial(mpfr_t *result, mpfr_t *x, int howmany, ...) {
     return 1;
 }
 
-
+STATIC_INLINE
 int
 is_leap_year(int y) {
     if (y % 4) return 0;
@@ -172,6 +179,7 @@ is_leap_year(int y) {
     return 1;
 }
 
+STATIC_INLINE
 long
 gregorian_year_from_rd(long rd) {
     double approx;
@@ -187,6 +195,7 @@ gregorian_year_from_rd(long rd) {
     }
 }
 
+STATIC_INLINE
 int
 fixed_from_ymd(int y, int m, int d) {
     return
@@ -202,6 +211,7 @@ fixed_from_ymd(int y, int m, int d) {
     ;
 }
 
+STATIC_INLINE
 int
 gregorian_components_from_rd(long rd, long *y, int *m, int *d) {
     int prior_days;
@@ -215,6 +225,7 @@ gregorian_components_from_rd(long rd, long *y, int *m, int *d) {
     return 1;
 }
 
+STATIC_INLINE
 int
 ymd_seconds_from_moment(mpfr_t *moment, long *y, int *m, int *d, int *s) {
     long rd;
@@ -242,7 +253,8 @@ EC_C(mpfr_t *result, int y) {
     return 1;
 }
 
-static int
+STATIC_INLINE
+int
 EC2(mpfr_t *correction, mpfr_t *ec_c) {
     mpfr_t a, b, c, d, e, f, g, h;
     mpfr_init_set_d(a, -0.00002, GMP_RNDN);
@@ -267,7 +279,8 @@ EC2(mpfr_t *correction, mpfr_t *ec_c) {
     return 1;
 }
 
-static int
+STATIC_INLINE
+int
 EC3(mpfr_t *correction, mpfr_t *ec_c) {
     mpfr_t a, b, c, d, e, f, g, h, i, j, k;
     mpfr_init_set_d(a, -0.000009, GMP_RNDN);
@@ -299,7 +312,8 @@ EC3(mpfr_t *correction, mpfr_t *ec_c) {
     return 1;
 }
 
-static int
+STATIC_INLINE
+int
 EC4(mpfr_t *correction, int year) {
     mpfr_t y, a, b, c, d;
 
@@ -319,7 +333,8 @@ EC4(mpfr_t *correction, int year) {
     return 1;
 }
 
-static int
+STATIC_INLINE
+int
 EC5(mpfr_t *correction, int year) {
     mpfr_t y, a, b, c;
 
@@ -337,7 +352,8 @@ EC5(mpfr_t *correction, int year) {
     return 1;
 }
 
-static int
+STATIC_INLINE
+int
 EC6(mpfr_t *correction, int year) {
     mpfr_t x;
 
@@ -359,6 +375,7 @@ EC6(mpfr_t *correction, int year) {
     return 1;
 }
 
+STATIC_INLINE
 int
 ephemeris_correction(mpfr_t *correction, int y) {
     if (1988 <= y && y <= 2019) {
@@ -386,6 +403,7 @@ ephemeris_correction(mpfr_t *correction, int y) {
     return 1;
 }
 
+STATIC_INLINE
 int
 dynamical_moment(mpfr_t *result, mpfr_t *moment) {
     mpfr_t correction;
@@ -408,6 +426,7 @@ mpfr_fprintf(stderr,
     return 1;
 }
 
+STATIC_INLINE
 int
 julian_centuries(mpfr_t *result, mpfr_t *moment) {
     dynamical_moment(result, moment);
@@ -423,6 +442,7 @@ mpfr_fprintf(stderr,
     return 1;
 }
 
+STATIC_INLINE
 int
 aberration(mpfr_t *result, mpfr_t *moment) {
     /* 0.0000974 * cos( 177.63 + 35999.01848 * julian_centuries(moment) ) - 0.0005575 */
@@ -436,6 +456,7 @@ aberration(mpfr_t *result, mpfr_t *moment) {
     return 1;
 }
 
+STATIC_INLINE
 int
 nutation( mpfr_t *result, mpfr_t *moment ) {
     mpfr_t A, B, C;
