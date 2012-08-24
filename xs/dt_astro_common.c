@@ -378,7 +378,7 @@ ephemeris_correction(mpfr_t *correction, int y) {
         mpfr_clear(c);
     } else if ( 1700 <= y && y <= 1799 ) {
         EC4(correction, y - 1700);
-    } else if ( 1620 <= y && 1699 ) {
+    } else if ( 1620 <= y && y <= 1699 ) {
         EC5(correction, y - 1600);
     } else {
         EC6(correction, y);
