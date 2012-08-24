@@ -110,6 +110,16 @@ As such, you HAVE to have MPFR installed correctly in your system. Please consul
 
 Patches to make the pure perl version work better is always welcome.
 
+=head2 17 solar terms are still off by ~ 5 minutes
+
+I've tried very hard to correctly calculate the solar term dates with this
+module, but I still get 17 instances in about 130 years worth of solar terms,
+where the dates are off by an average of about 5 minutes -- and these usually 
+fall at right about midnight, causing day-based comparisons to be off by 1.
+
+I'm sure there's something that's causing a round off somwhere. If you're up
+to it, please see xt/101_solar_terms.t and see if you can fix it for me!
+
 =head1 FUNCTIONS
 
 =head2 BACKEND()
@@ -222,7 +232,7 @@ Mean time (in moment) between a full year (time for the Earth to go around the s
 
 This library is available under Artistic License v2, and is:
 
-    Copyright (C) 2010  Daisuke Maki C<< <daisuke@endeworks.jp> >>
+    Copyright (C) 2012  Daisuke Maki C<< <daisuke@endeworks.jp> >>
 
 =head1 AUTHOR
 
