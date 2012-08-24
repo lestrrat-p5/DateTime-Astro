@@ -1,6 +1,10 @@
 Changes
 =======
 
+0.99999_03 24 Aug 2012
+    * What, it has been 2 years?!
+    * There was a stupid boolean operation that always resulted in true
+
 0.99999_02 27 Aug 2010
     * Fixed the adjustment on new moons so that it's done in one step
       instead of looping by adjusting fixed amounts. This caused a
