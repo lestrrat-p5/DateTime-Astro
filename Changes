@@ -1,6 +1,14 @@
 Changes
 =======
 
+1.00 24 Aug 2012
+    * This module has been sitting around for way too long.
+      Although it's not perfect, it works for about 99% of the cases, and
+      so I'm just going to release it and see if there's anybody who wants
+      to take a stab at making it work even more correctly
+    * Declare functions static + inline as much as possible.
+    * Very minor optimizations
+
 0.99999_03 24 Aug 2012
     * What, it has been 2 years?!
     * There was a stupid boolean operation that always resulted in true
@@ -18,6 +26,9 @@ Changes
     * Rewritten from scratch using MPFR. DateTime::Astro will host 
       ALL astro-related calculations so you only need to link to MPFR once :)
     * Moved repository to github
+
+Changes (from DateTime-Util-Astro, predecessor of this module)
+==============================================================
 
 0.12000 - Tue 04 Nov 2007 [rev 3804]
   - Fix ephemeris_correction. The Calculations for middle ages were

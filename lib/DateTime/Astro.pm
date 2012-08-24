@@ -32,7 +32,7 @@ BEGIN {
         solar_longitude_after
         solar_longitude_after_from_moment
     );
-    our $VERSION = '0.99999';
+    our $VERSION = '1.00';
 
     my $backend = 'XS';
 
