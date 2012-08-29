@@ -10,12 +10,18 @@ sub mysystem(@) {
 }
 
 sub cpanm (@) {
-    @_ = ("cpanm", "-v", "--notest", @_);
+    @_ = ("cpanm", "--notest", @_);
     goto &mysystem;
 }
 
 sub run_tests {
-    cpanm("--installdeps", ".");
+    eval {
+        cpanm("--installdeps", ".");
+    };
+    if (my $e = $@) {
+        mysystem("cat", "/home/travis/.cpanm/build.log");
+        die $e;
+    }
     mysystem("perl", "Makefile.PL");
     mysystem("make", "test");
 }
