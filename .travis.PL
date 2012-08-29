@@ -10,7 +10,7 @@ sub mysystem(@) {
 }
 
 sub cpanm (@) {
-    @_ = ("cpanm", "--notest", @_);
+    @_ = ("cpanm", "-v", "--notest", @_);
     goto &mysystem;
 }
 
