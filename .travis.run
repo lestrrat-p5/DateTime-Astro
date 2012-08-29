@@ -1,3 +1,5 @@
+#!perl
+
 use strict;
 use Cwd ();
 use File::Spec;
@@ -44,10 +46,8 @@ cpanm(qw(
     mysystem("make");
     mysystem("make", "install");
 
-    my $incdir = File::Spec->catdir($prefix, "include");
-    my $libdir = File::Spec->catdir($prefix, "lib");
-    $ENV{CCFLAGS} = "-I$incdir";
-    $ENV{LDFLAGS} = "-L$libdir";
+
+    $ENV{MPFR_HOME} = $prefix;
 
     chdir $ROOT;
 }
