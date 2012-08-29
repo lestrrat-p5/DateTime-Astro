@@ -48,6 +48,8 @@ cpanm(qw(
     my $libdir = File::Spec->catdir($prefix, "lib");
     $ENV{CCFLAGS} = "-I$incdir";
     $ENV{LDFLAGS} = "-L$libdir";
+
+    chdir $ROOT;
 }
 
 run_tests();
