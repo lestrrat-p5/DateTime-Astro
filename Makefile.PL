@@ -13,7 +13,7 @@ if ($ENV{MPFR_HOME}) {
     $ENV{MPFR_LIBS}     ||= File::Spec->catdir($ENV{MPFR_HOME}, "lib");
 }
 
-print "Detected the following ZMQ settings:\n";
+print "Detected the following MPRF library settings:\n";
 foreach my $env (qw(MPFR_HOME MPFR_INCLUDES MPFR_LIBS)) {
     printf " + %s = %s\n", $env, exists $ENV{$env} ? $ENV{$env} : "(null)";
 }
