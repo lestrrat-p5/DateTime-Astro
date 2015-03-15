@@ -10,7 +10,7 @@ requires 'Exporter' => '5.57';
 
 my (@libs, @includes);
 
-for my $dir ($ENV{GMP_HOME}, $ENV{MPFR {_HOME}) {
+for my $dir ($ENV{GMP_HOME}, $ENV{MPFR_HOME}) {
     if ($dir) {
         push @includes, File::Spec->catdir($dir, "include");
         push @libs,     File::Spec->catdir($dir, "lib");
@@ -24,7 +24,7 @@ if (@libs) {
     $ENV{MPFR_LIBS}     ||= join ":", @libs;
 }
 
-print "Detected the following ZMQ settings:\n";
+print "Detected the following MPFR settings:\n";
 foreach my $env (qw(MPFR_HOME MPFR_INCLUDES MPFR_LIBS)) {
     printf " + %s = %s\n", $env, exists $ENV{$env} ? $ENV{$env} : "(null)";
 }
