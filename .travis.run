@@ -60,7 +60,7 @@ cpanm(qw(
     mysystem("curl", "-LO", "http://www.mpfr.org/mpfr-$version/$file");
     mysystem("tar", "xzf", $file);
     chdir $basename;
-    mysystem("./configure", "--prefix", $prefix);
+    mysystem("./configure", "--prefix", $prefix, "--with-gmp", $ENV{GMP_HOME});
     mysystem("make");
     mysystem("make", "install");
 
