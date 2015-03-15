@@ -8,9 +8,20 @@ requires 'DateTime';
 requires 'DateTime::Set';
 requires 'Exporter' => '5.57';
 
-if ($ENV{MPFR_HOME}) {
-    $ENV{MPFR_INCLUDES} ||= File::Spec->catdir($ENV{MPFR_HOME}, "include");
-    $ENV{MPFR_LIBS}     ||= File::Spec->catdir($ENV{MPFR_HOME}, "lib");
+my (@libs, @includes);
+
+for my $dir ($ENV{GMP_HOME}, $ENV{MPFR {_HOME}) {
+    if ($dir) {
+        push @includes, File::Spec->catdir($dir, "include");
+        push @libs,     File::Spec->catdir($dir, "lib");
+    }
+}
+
+if (@includs) {
+    $ENV{MPFR_INCLUDES} ||= join ":", @includes;
+}
+if (@libs) {
+    $ENV{MPFR_LIBS}     ||= join ":", @libs;
 }
 
 print "Detected the following ZMQ settings:\n";
@@ -28,7 +39,7 @@ if ($ENV{MPFR_LIBS}) {
 use_ppport;
 use_xshelper;
 cc_warnings;
-cc_libs 'mpfr';
+cc_libs "mpfr", "gmp";
 cc_src_paths 'xs';
 author_tests 'xt';
 auto_set_repository;

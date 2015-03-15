@@ -36,6 +36,22 @@ cpanm(qw(
 ));
 
 {
+    my $version = "6.0.0a";
+    my $basename = "gmp-$version";
+    my $prefix = File::Spec->catfile($EXTDIR, $basename);
+    my $file = "$basename.tar.xz"
+    mysystem("curl", "-LO", "https://ftp.gnu.org/gnu/gmp/$file");
+    mysystem("tar", "xzf", $file);
+    chdir $basename;
+    mysystem("./configure", "--prefix", $prefix);
+    mysystem("make");
+    mysystem("make", "install");
+
+    $ENV{GMP_HOME} = $prefix;
+    chdir $ROOT;
+}
+
+{
     my $version = "3.1.2";
     my $basename = "mpfr-$version";
     my $prefix = File::Spec->catfile($EXTDIR, $basename);
@@ -46,7 +62,6 @@ cpanm(qw(
     mysystem("./configure", "--prefix", $prefix);
     mysystem("make");
     mysystem("make", "install");
-
 
     $ENV{MPFR_HOME} = $prefix;
 
