@@ -17,7 +17,7 @@ for my $dir ($ENV{GMP_HOME}, $ENV{MPFR_HOME}) {
     }
 }
 
-if (@includs) {
+if (@includes) {
     $ENV{MPFR_INCLUDES} ||= join ":", @includes;
 }
 if (@libs) {
