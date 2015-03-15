@@ -18,10 +18,10 @@ for my $dir ($ENV{GMP_HOME}, $ENV{MPFR_HOME}) {
 }
 
 if (@includes) {
-    $ENV{MPFR_INCLUDES} ||= join ":", @includes;
+    $ENV{MPFR_INCLUDES} ||= join " ", @includes;
 }
 if (@libs) {
-    $ENV{MPFR_LIBS}     ||= join ":", @libs;
+    $ENV{MPFR_LIBS}     ||= join " ", @libs;
 }
 
 print "Detected the following MPFR settings:\n";
