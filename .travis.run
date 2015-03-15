@@ -36,10 +36,11 @@ cpanm(qw(
 ));
 
 {
-    my $version = "6.0.0a";
+    my $version = "6.0.0";
+    my $version_suffix = "a";
     my $basename = "gmp-$version";
     my $prefix = File::Spec->catfile($EXTDIR, $basename);
-    my $file = "$basename.tar.xz";
+    my $file = "$basename$version_suffix.tar.xz";
     mysystem("curl", "-LO", "https://ftp.gnu.org/gnu/gmp/$file");
     mysystem("tar", "xf", $file);
     chdir $basename;
