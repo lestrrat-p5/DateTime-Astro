@@ -36,10 +36,11 @@ cpanm(qw(
 ));
 
 {
-    my $basename = "mpfr-3.1.1";
+    my $version = "3.1.2";
+    my $basename = "mpfr-$version";
     my $prefix = File::Spec->catfile($EXTDIR, $basename);
     my $file = "$basename.tar.gz";
-    mysystem("curl", "-LO", "http://www.mpfr.org/mpfr-current/$file");
+    mysystem("curl", "-LO", "http://www.mpfr.org/mpfr-$version/$file");
     mysystem("tar", "xzf", $file);
     chdir $basename;
     mysystem("./configure", "--prefix", $prefix);
