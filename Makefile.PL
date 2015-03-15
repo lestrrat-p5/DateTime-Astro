@@ -21,7 +21,7 @@ if (@includes) {
     $ENV{MPFR_INCLUDES} ||= join " ", @includes;
 }
 if (@libs) {
-    $ENV{MPFR_LIBS}     ||= join " ", @libs;
+    $ENV{MPFR_LIBS}     ||= join " ", map { "-L$_" } @libs;
 }
 
 print "Detected the following MPFR settings:\n";
