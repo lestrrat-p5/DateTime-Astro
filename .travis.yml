@@ -4,6 +4,6 @@ perl:
   - "5.18"
   - "5.16"
 install: true
-test: "perl ./.travis.run"
+script: "perl ./.travis.run"
 
 
