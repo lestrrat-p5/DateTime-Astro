@@ -8,12 +8,24 @@ requires 'DateTime';
 requires 'DateTime::Set';
 requires 'Exporter' => '5.57';
 
-if ($ENV{MPFR_HOME}) {
-    $ENV{MPFR_INCLUDES} ||= File::Spec->catdir($ENV{MPFR_HOME}, "include");
-    $ENV{MPFR_LIBS}     ||= File::Spec->catdir($ENV{MPFR_HOME}, "lib");
+my (@libs, @includes);
+
+for my $dir ($ENV{GMP_HOME}, $ENV{MPFR_HOME}) {
+    if ($dir) {
+        push @includes, File::Spec->catdir($dir, "include");
+        push @libs,     File::Spec->catdir($dir, "lib");
+    }
+}
+
+if (@includes) {
+    $ENV{MPFR_INCLUDES} ||= join " ", @includes;
+}
+if (@libs) {
+    $ENV{MPFR_LIBS}     ||= join " ", map { "-L$_" } @libs;
 }
 
 print "Detected the following MPRF library settings:\n";
+
 foreach my $env (qw(MPFR_HOME MPFR_INCLUDES MPFR_LIBS)) {
     printf " + %s = %s\n", $env, exists $ENV{$env} ? $ENV{$env} : "(null)";
 }
@@ -25,12 +37,12 @@ if ($ENV{MPFR_LIBS}) {
     cc_libs $ENV{MPFR_LIBS};
 }
 
-use_ppport; #Module::Install::XSUtil
-use_xshelper; #Module::Install::XSUtil
-cc_warnings; #Module::Install::XSUtil
-cc_libs 'mpfr'; #Module::Install::XSUtil
-cc_src_paths 'xs'; #Module::Install::XSUtil
-author_tests 'xt'; #Module::Install::AuthorTests
-auto_set_repository; #Module::Install::Repository
+use_ppport;            #Module::Install::XSUtil
+use_xshelper;          #Module::Install::XSUtil
+cc_warnings;           #Module::Install::XSUtil
+cc_libs "mpfr", "gmp"; #Module::Install::XSUtil
+cc_src_paths 'xs';     #Module::Install::XSUtil
+author_tests 'xt';     #Module::Install::AuthorTests
+auto_set_repository;   #Module::Install::Repository
 
 WriteAll;
