@@ -24,7 +24,7 @@ if (@libs) {
     $ENV{MPFR_LIBS}     ||= join " ", map { "-L$_" } @libs;
 }
 
-print "Detected the following MPRF library settings:\n";
+print "Detected the following MPFR settings:\n";
 
 foreach my $env (qw(MPFR_HOME MPFR_INCLUDES MPFR_LIBS)) {
     printf " + %s = %s\n", $env, exists $ENV{$env} ? $ENV{$env} : "(null)";
