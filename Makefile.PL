@@ -25,6 +25,7 @@ if (@libs) {
 }
 
 print "Detected the following MPFR settings:\n";
+
 foreach my $env (qw(MPFR_HOME MPFR_INCLUDES MPFR_LIBS)) {
     printf " + %s = %s\n", $env, exists $ENV{$env} ? $ENV{$env} : "(null)";
 }
@@ -36,12 +37,12 @@ if ($ENV{MPFR_LIBS}) {
     cc_libs $ENV{MPFR_LIBS};
 }
 
-use_ppport;
-use_xshelper;
-cc_warnings;
-cc_libs "mpfr", "gmp";
-cc_src_paths 'xs';
-author_tests 'xt';
-auto_set_repository;
+use_ppport;            #Module::Install::XSUtil
+use_xshelper;          #Module::Install::XSUtil
+cc_warnings;           #Module::Install::XSUtil
+cc_libs "mpfr", "gmp"; #Module::Install::XSUtil
+cc_src_paths 'xs';     #Module::Install::XSUtil
+author_tests 'xt';     #Module::Install::AuthorTests
+auto_set_repository;   #Module::Install::Repository
 
 WriteAll;
