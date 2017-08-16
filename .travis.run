@@ -33,6 +33,8 @@ cpanm(qw(
     Module::Install::AuthorTests
     Module::Install::Repository
     Module::Install::XSUtil
+    Test::Requires
+    JSON
 ));
 
 {
