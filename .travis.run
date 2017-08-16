@@ -33,6 +33,8 @@ cpanm(qw(
     Module::Install::AuthorTests
     Module::Install::Repository
     Module::Install::XSUtil
+    Test::Requires
+    JSON
 ));
 
 {
@@ -40,33 +42,42 @@ cpanm(qw(
     my $version_suffix = "a";
     my $basename = "gmp-$version";
     my $prefix = File::Spec->catfile($EXTDIR, $basename);
-    my $file = "$basename$version_suffix.tar.xz";
-    mysystem("curl", "-LO", "https://ftp.gnu.org/gnu/gmp/$file");
-    mysystem("tar", "xf", $file);
-    chdir $basename;
-    mysystem("./configure", "--prefix", $prefix);
-    mysystem("make");
-    mysystem("make", "install");
+    if (-e $prefix) {
+        print STDERR "$prefix already exists";
+    } else {
+        print STDERR "installing $prefix";
+        my $file = "$basename$version_suffix.tar.xz";
+        mysystem("curl", "-LO", "https://ftp.gnu.org/gnu/gmp/$file");
+        mysystem("tar", "xf", $file);
+        chdir $basename;
+        mysystem("./configure", "--prefix", $prefix);
+        mysystem("make");
+        mysystem("make", "install");
+        chdir $ROOT;
+    }
 
     $ENV{GMP_HOME} = $prefix;
-    chdir $ROOT;
 }
 
 {
     my $version = "3.1.2";
     my $basename = "mpfr-$version";
     my $prefix = File::Spec->catfile($EXTDIR, $basename);
-    my $file = "$basename.tar.gz";
-    mysystem("curl", "-LO", "http://www.mpfr.org/mpfr-$version/$file");
-    mysystem("tar", "xzf", $file);
-    chdir $basename;
-    mysystem("./configure", "--prefix", $prefix, "--with-gmp=$ENV{GMP_HOME}");
-    mysystem("make");
-    mysystem("make", "install");
+    if (-e $prefix) {
+        print STDERR "$prefix already exists";
+    } else {
+        print STDERR "installing $prefix";
+        my $file = "$basename.tar.gz";
+        mysystem("curl", "-LO", "http://www.mpfr.org/mpfr-$version/$file");
+        mysystem("tar", "xzf", $file);
+        chdir $basename;
+        mysystem("./configure", "--prefix", $prefix, "--with-gmp=$ENV{GMP_HOME}");
+        mysystem("make");
+        mysystem("make", "install");
+        chdir $ROOT;
+    }
 
     $ENV{MPFR_HOME} = $prefix;
-
-    chdir $ROOT;
 }
 
 run_tests();
