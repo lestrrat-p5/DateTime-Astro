@@ -8,4 +8,6 @@ perl:
 install: true
 script: "perl ./.travis.run"
 
-
+cache:
+  directories:
+    - ext
