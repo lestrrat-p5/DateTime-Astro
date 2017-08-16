@@ -8,6 +8,8 @@ requires 'DateTime';
 requires 'DateTime::Set';
 requires 'Exporter' => '5.57';
 
+test_requires 'Test::Exception';
+
 my (@libs, @includes);
 
 for my $dir ($ENV{GMP_HOME}, $ENV{MPFR_HOME}) {
