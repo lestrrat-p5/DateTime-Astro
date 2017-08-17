@@ -1,0 +1,15 @@
+*.bs
+*.c
+*.o
+/Build
+/DateTime-Astro-*
+/META.yml
+/MYMETA.*
+/_build/
+/blib/
+/pm_to_blib
+/xs/ppport.h
+/xs/xshelper.h
+/gmp-*
+/mpfr-*
+/ext/
