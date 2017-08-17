@@ -38,7 +38,7 @@ BEGIN {
 
     # XXX forcibly set explicit_xs so that PP won't be loaded unless
     # explicitly called
-    my $explicit_xs = 1;
+    my $explicit_xs = 0;
     if (exists $ENV{PERL_DATETIME_ASTRO_BACKEND} && 
         $ENV{PERL_DATETIME_ASTRO_BACKEND} eq 'XS') {
         $explicit_xs = 1;

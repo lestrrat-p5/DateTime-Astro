@@ -11,31 +11,10 @@ sub mysystem(@) {
     system(@_) == 0 or die "Failed to execute @_: $!";
 }
 
-sub cpanm (@) {
-    @_ = ("cpanm", "--notest", @_);
-    goto &mysystem;
-}
-
 sub run_tests {
-    eval {
-        cpanm("--installdeps", ".");
-    };
-    if (my $e = $@) {
-        mysystem("cat", "/home/travis/.cpanm/build.log");
-        die $e;
-    }
-    mysystem("perl", "Makefile.PL");
-    mysystem("make", "test");
+    mysystem("perl", "Build.PL");
+    mysystem("./Build", "test");
 }
-
-cpanm(qw(
-    inc::Module::Install
-    Module::Install::AuthorTests
-    Module::Install::Repository
-    Module::Install::XSUtil
-    Test::Requires
-    JSON
-));
 
 {
     my $version = "6.0.0";
@@ -43,9 +22,9 @@ cpanm(qw(
     my $basename = "gmp-$version";
     my $prefix = File::Spec->catfile($EXTDIR, $basename);
     if (-e $prefix) {
-        print STDERR "$prefix already exists";
+        print STDERR "$prefix already exists\n";
     } else {
-        print STDERR "installing $prefix";
+        print STDERR "installing $prefix\n";
         my $file = "$basename$version_suffix.tar.xz";
         mysystem("curl", "-LO", "https://ftp.gnu.org/gnu/gmp/$file");
         mysystem("tar", "xf", $file);
@@ -64,9 +43,9 @@ cpanm(qw(
     my $basename = "mpfr-$version";
     my $prefix = File::Spec->catfile($EXTDIR, $basename);
     if (-e $prefix) {
-        print STDERR "$prefix already exists";
+        print STDERR "$prefix already exists\n";
     } else {
-        print STDERR "installing $prefix";
+        print STDERR "installing $prefix\n";
         my $file = "$basename.tar.gz";
         mysystem("curl", "-LO", "http://www.mpfr.org/mpfr-$version/$file");
         mysystem("tar", "xzf", $file);
