@@ -9,7 +9,6 @@ use strict;
 use warnings;
 use utf8;
 
-BEGIN { push @INC, '.' }
 use builder::MyBuilder;
 use File::Basename;
 use File::Spec;
@@ -23,9 +22,9 @@ my %args = (
     },
 
     requires => {
-        'DateTime' => '0',
-        'DateTime::Set' => '0',
         'Exporter' => '5.57',
+        'DateTime::Set' => '0',
+        'DateTime' => '0',
     },
 
     recommends => {

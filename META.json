@@ -4,13 +4,13 @@
       "Daisuke Maki C<< <daisuke@endeworks.jp> >>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.13, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.0.2, CPAN::Meta::Converter version 2.150001",
    "license" : [
       "artistic_2"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : 2
+      "version" : "2"
    },
    "name" : "DateTime-Astro",
    "no_index" : {
@@ -68,13 +68,12 @@
          "web" : "https://github.com/lestrrat/DateTime-Astro"
       }
    },
-   "version" : "1.01",
+   "version" : "1.02",
    "x_contributors" : [
-      "Daisuke Maki <lestrrat+github@gmail.com>",
-      "Shoichi Kaji <skaji@cpan.org>",
-      "jonasbn <jonasbn@gmail.com>",
       "jonasbn <jonasbn@logicLAB.dk>",
-      "nric62 <uluparello@gmail.com>"
-   ],
-   "x_serialization_backend" : "JSON::PP version 2.94"
+      "nric62 <uluparello@gmail.com>",
+      "jonasbn <jonasbn@gmail.com>",
+      "Shoichi Kaji <skaji@cpan.org>",
+      "lestrrat <lestrrat+github@gmail.com>"
+   ]
 }
