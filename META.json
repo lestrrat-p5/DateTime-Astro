@@ -68,12 +68,12 @@
          "web" : "https://github.com/lestrrat/DateTime-Astro"
       }
    },
-   "version" : "1.02",
+   "version" : "1.03",
    "x_contributors" : [
       "jonasbn <jonasbn@logicLAB.dk>",
       "nric62 <uluparello@gmail.com>",
       "jonasbn <jonasbn@gmail.com>",
       "Shoichi Kaji <skaji@cpan.org>",
-      "lestrrat <lestrrat+github@gmail.com>"
+      "Daisuke Maki <lestrrat+github@gmail.com>"
    ]
 }

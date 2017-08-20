@@ -23,8 +23,8 @@ my %args = (
 
     requires => {
         'Exporter' => '5.57',
-        'DateTime::Set' => '0',
         'DateTime' => '0',
+        'DateTime::Set' => '0',
     },
 
     recommends => {

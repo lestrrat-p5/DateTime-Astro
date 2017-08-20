@@ -2,6 +2,9 @@ Revision history for Perl extension DateTime-Astro
 
 {{$NEXT}}
 
+1.03 2017-08-20T10:32:17Z
+    * messed up previous release
+
 1.02 2017-08-20T10:28:44Z
     * Migrate to using Minilla for packaging
     * Fix packaging details
