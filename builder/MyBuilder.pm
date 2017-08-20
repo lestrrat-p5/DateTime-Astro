@@ -8,6 +8,7 @@ sub new {
 
     my (@libs, @includes);
 
+    print "Probing for mpfr and gmp libraries and header files...\n";
     for my $env (grep { exists $ENV{$_} } qw(GMP_HOME MPFR_HOME)) {
         push @includes, File::Spec->catdir($ENV{$env}, "include");
         push @libs,     File::Spec->catdir($ENV{$env}, "lib");
@@ -18,6 +19,13 @@ sub new {
     }
     if (@libs) {
         $ENV{MPFR_LIBS}     ||= join " ", map { "-L$_" } @libs;
+    }
+
+    if (! @includes) {
+        print "No include directories detected\n";
+    }
+    if (! @libs) {
+        print "No link directories detected\n";
     }
 
     print "Detected the following MPFR settings:\n";
