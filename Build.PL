@@ -9,6 +9,7 @@ use strict;
 use warnings;
 use utf8;
 
+BEGIN { push @INC, '.' }
 use builder::MyBuilder;
 use File::Basename;
 use File::Spec;
@@ -22,9 +23,9 @@ my %args = (
     },
 
     requires => {
-        'Exporter' => '5.57',
         'DateTime' => '0',
         'DateTime::Set' => '0',
+        'Exporter' => '5.57',
     },
 
     recommends => {
@@ -45,7 +46,6 @@ my %args = (
     allow_pureperl => 1,
 
     script_files => [glob('script/*'), glob('bin/*')],
-    c_source     => [qw()],
     PL_files => {},
 
     test_files           => ((-d '.git' || $ENV{RELEASE_TESTING}) && -d 'xt') ? 't/ xt/' : 't/',
