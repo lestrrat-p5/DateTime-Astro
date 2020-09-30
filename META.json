@@ -4,13 +4,13 @@
       "Daisuke Maki C<< <daisuke@endeworks.jp> >>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.2, CPAN::Meta::Converter version 2.150001",
+   "generated_by" : "Minilla/v3.1.11, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "artistic_2"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : "2"
+      "version" : 2
    },
    "name" : "DateTime-Astro",
    "no_index" : {
@@ -34,12 +34,10 @@
       },
       "develop" : {
          "requires" : {
-            "JSON" : "0",
             "Test::CPAN::Meta" : "0",
             "Test::MinimumVersion::Fast" : "0.04",
-            "Test::PAUSE::Permissions" : "0.04",
+            "Test::PAUSE::Permissions" : "0.07",
             "Test::Pod" : "1.41",
-            "Test::Requires" : "0",
             "Test::Spellunker" : "v0.2.7"
          }
       },
@@ -52,28 +50,32 @@
       },
       "test" : {
          "requires" : {
-            "Test::Exception" : "0"
+            "JSON" : "0",
+            "Test::Exception" : "0",
+            "Test::Requires" : "0"
          }
       }
    },
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/lestrrat/DateTime-Astro/issues"
+         "web" : "https://github.com/lestrrat-p5/DateTime-Astro/issues"
       },
-      "homepage" : "https://github.com/lestrrat/DateTime-Astro",
+      "homepage" : "https://github.com/lestrrat-p5/DateTime-Astro",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/lestrrat/DateTime-Astro.git",
-         "web" : "https://github.com/lestrrat/DateTime-Astro"
+         "url" : "git://github.com/lestrrat-p5/DateTime-Astro.git",
+         "web" : "https://github.com/lestrrat-p5/DateTime-Astro"
       }
    },
-   "version" : "1.03",
+   "version" : "1.04",
    "x_contributors" : [
-      "jonasbn <jonasbn@logicLAB.dk>",
-      "nric62 <uluparello@gmail.com>",
-      "jonasbn <jonasbn@gmail.com>",
       "Shoichi Kaji <skaji@cpan.org>",
-      "Daisuke Maki <lestrrat+github@gmail.com>"
-   ]
+      "jonasbn <jonasbn@gmail.com>",
+      "jonasbn <jonasbn@logicLAB.dk>",
+      "lestrrat <lestrrat+github@gmail.com>",
+      "nric62 <uluparello@gmail.com>"
+   ],
+   "x_serialization_backend" : "JSON::PP version 4.02",
+   "x_static_install" : 0
 }

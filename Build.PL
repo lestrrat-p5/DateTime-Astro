@@ -38,7 +38,9 @@ my %args = (
     },
 
     test_requires => {
+        'JSON' => '0',
         'Test::Exception' => '0',
+        'Test::Requires' => '0',
     },
 
     name            => 'DateTime-Astro',
