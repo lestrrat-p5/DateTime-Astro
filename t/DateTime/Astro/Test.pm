@@ -7,13 +7,16 @@ our @EXPORT_OK = qw(datetime);
 
 sub datetime {
     my ($y, $m, $d, $H, $M, $S) = @_;
-    my $dt = DateTime->today(time_zone => 'UTC');
-    $dt->set( year => $y ) if defined $y;
-    $dt->set( day => $d ) if defined $d;
-    $dt->set( month => $m ) if defined $m;
-    $dt->set( hour => $H ) if defined $H;
-    $dt->set( minute => $M ) if defined $M;
-    $dt->set( second => $S ) if defined $S;
+
+    my %args = (time_zone => 'UTC');
+    $args{year} = $y if defined $y;
+    $args{day} = $d if defined $d;
+    $args{month} = $m if defined $m;
+    $args{hour} = $H if defined $H;
+    $args{minute} = $M if defined $M;
+    $args{second} = $S if defined $S;
+
+    my $dt = DateTime->new(%args);
     return $dt;
 }
 
